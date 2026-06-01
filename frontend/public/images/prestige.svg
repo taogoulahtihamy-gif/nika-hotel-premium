@@ -1,0 +1,9 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='900' viewBox='0 0 1400 900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop stop-color='#0a3c78'/><stop offset='.45' stop-color='#1fa8d8'/><stop offset='1' stop-color='#06152f'/></linearGradient><filter id='s'><feDropShadow dx='0' dy='30' stdDeviation='30' flood-color='#000' flood-opacity='.35'/></filter></defs>
+<rect width='1400' height='900' fill='url(#g)'/>
+<circle cx='1080' cy='140' r='310' fill='rgba(255,255,255,.12)'/>
+<circle cx='180' cy='760' r='260' fill='rgba(217,164,65,.18)'/>
+<g filter='url(#s)'><rect x='270' y='220' width='860' height='470' rx='34' fill='rgba(255,255,255,.18)' stroke='rgba(255,255,255,.35)'/><rect x='345' y='300' width='180' height='260' rx='18' fill='rgba(255,255,255,.65)'/><rect x='610' y='300' width='180' height='260' rx='18' fill='rgba(255,255,255,.65)'/><rect x='875' y='300' width='180' height='260' rx='18' fill='rgba(255,255,255,.65)'/><rect x='240' y='650' width='920' height='60' rx='24' fill='#d9a441'/></g>
+<text x='80' y='120' font-family='Arial Black,Arial' font-size='72' fill='white' letter-spacing='-4'>NIKA HOTEL</text>
+<text x='82' y='190' font-family='Arial' font-size='34' fill='#d8e7f7'>PRESTIGE PREMIUM VISUAL</text>
+</svg>

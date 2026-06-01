@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum ReservationStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+model Room {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String
+  price       Float?
+  currency    String   @default("USD")
+  capacity    Int      @default(2)
+  imageUrl    String?
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Reservation {
+  id        Int                @id @default(autoincrement())
+  fullName  String
+  phone     String
+  email     String?
+  checkIn   DateTime
+  checkOut  DateTime
+  guests    Int
+  roomType  String
+  notes     String?
+  status    ReservationStatus  @default(pending)
+  createdAt DateTime           @default(now())
+}
