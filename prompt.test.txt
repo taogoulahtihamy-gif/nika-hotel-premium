@@ -1,174 +1,40 @@
-NIKA HOTEL — NOTIFICATIONS TEMPS RÉEL PREMIUM ADMIN + CLIENT
+Corrige l’affichage du centre de notifications admin.
 
-Contexte :
-Le projet fonctionne actuellement.
-SQLite + Prisma 7 sont restaurés.
-Room Service, QR Codes, historique et tracking fonctionnent.
-Ne pas toucher à PostgreSQL.
-Ne pas casser SQLite.
-Ne pas casser Render/Vercel.
+Problème :
+Sur desktop, le dropdown de notification apparaît mal dans la sidebar, trop large et décalé. Il couvre le menu admin et donne un rendu cassé.
 
-Objectif :
-Ajouter un vrai système de notifications premium en temps réel pour l’admin et le client.
-
-==================================================
-1. NOTIFICATIONS ADMIN GLOBALES
-==================================================
-
-Créer un système global disponible sur toutes les pages admin :
-
-- /admin/dashboard
-- /admin/room-service
-- /admin/reservations
-- /admin/rooms
-- /admin/qrcodes
-- /admin/messages
-- /admin/gallery
-
-Quand une nouvelle commande Room Service arrive :
-
-- toast premium
-- son court
-- vibration mobile si compatible
-- badge rouge compteur
-- historique dans centre de notifications
-- menu Room Service avec badge
-- aucune obligation d’être sur la page Room Service
-
-Interdits :
-- pas de reload
-- pas de clignotement
-- pas de router.refresh automatique
-- ne pas vider les données avant refetch
-
-==================================================
-2. CENTRE DE NOTIFICATIONS ADMIN
-==================================================
-
-Ajouter une cloche dans le header admin.
-
-Fonctions :
-
-- compteur notifications non lues
-- liste des notifications
-- marquer comme lu
-- tout marquer comme lu
-- vider l’historique
-- design ultra premium bleu nuit + doré
-
-Types de notifications :
-
-- Nouvelle commande Room Service
-- Changement de statut commande
-- Nouvelle réservation
-- Nouveau message client
-- Appel réception depuis une chambre
-
-==================================================
-3. NOTIFICATIONS CLIENT
-==================================================
-
-Sur la page tracking :
-
-/room-service/[room]/tracking/[orderId]
-
-Quand l’admin change le statut :
-
-- Reçue
-- Préparation
-- Livraison
-- Livrée
-- Annulée
-
-Le client doit voir la mise à jour sans refresh.
-
-Afficher toast premium :
-
-- Votre commande est en préparation
-- Votre commande est en cours de livraison
-- Votre commande a été livrée
-- Votre commande a été annulée
-
-Ajouter :
-- son notification
-- vibration Android si compatible
-- animation timeline
-
-==================================================
-4. SON
-==================================================
-
-Ajouter un son court :
-
-/public/sounds/notification.mp3
-
-Si impossible d’ajouter un fichier mp3, utiliser Web Audio API pour générer un bip premium court.
-
-Important :
-Le son doit être activé après interaction utilisateur :
-bouton “Activer les notifications”.
-
-==================================================
-5. TEMPS RÉEL
-==================================================
-
-Si Socket.IO existe déjà, l’utiliser.
-
-Sinon, créer une solution simple et stable :
-
-- polling discret toutes les 5 secondes
-- sans clignotement
-- sans reload
-- comparaison par id/date/statut
-- ne notifier que les nouveautés ou changements réels
-- ne pas rejouer les anciennes notifications
-
-==================================================
-6. DESIGN
-==================================================
-
-Tout doit rester ultra premium :
-
-- bleu nuit
-- doré
-- glassmorphism
-- badges propres
-- animations légères
-- responsive mobile/tablette/desktop
-- aucun débordement horizontal
-
-==================================================
-7. TESTS OBLIGATOIRES
-==================================================
+À corriger :
+1. La cloche doit rester propre dans le header/sidebar.
+2. Le dropdown doit s’ouvrir :
+   - aligné à droite de la cloche
+   - largeur max 320px desktop
+   - largeur 90vw mobile
+   - jamais hors écran
+   - z-index élevé
+3. Si aucune notification :
+   afficher une petite carte propre :
+   “Aucune notification”
+4. Ne pas laisser un grand panneau vide.
+5. Sur mobile :
+   ouvrir en panneau plein largeur propre ou bottom sheet.
+6. Garder design premium :
+   bleu nuit
+   doré
+   glassmorphism
+   border-radius 20px
+   shadow légère
+7. Ne pas casser :
+   - notifications
+   - son
+   - vibration
+   - badges
+   - admin layout
 
 Tester :
-
-1. Ouvrir /admin/dashboard
-2. Activer les notifications
-3. Depuis téléphone, scanner QR chambre 101
-4. Passer commande
-5. Vérifier notification admin sur dashboard
-6. Aller sur /admin/qrcodes
-7. Passer une autre commande
-8. Vérifier notification admin même hors Room Service
-9. Aller sur tracking client
-10. Modifier statut côté admin
-11. Vérifier mise à jour client sans refresh
-12. Vérifier son
-13. Vérifier vibration si compatible
-14. Vérifier absence de clignotement
-15. Vérifier npm run build backend et frontend
-
-==================================================
-8. INTERDICTIONS
-==================================================
-
-Ne pas modifier :
-- schema.prisma vers PostgreSQL
-- DATABASE_URL
-- configuration SQLite
-- URLs Render/Vercel
-- logique QR existante
+/admin/qrcodes
+/admin/dashboard
+/admin/room-service
+/admin/messages
 
 Résultat attendu :
-Un vrai système de notifications hôtelières premium, global, stable, sans clignotement, avec son, vibration, badge, centre de notifications et suivi client temps réel.
+La notification est propre, lisible, alignée, sans chevaucher brutalement la sidebar.
