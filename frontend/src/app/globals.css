@@ -109,6 +109,10 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: translate(20px, -30px) scale(1.05) rotate(360deg); border-radius: 50%; }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ========== GLASSMORPHISM UTILITIES ========== */
 .glass {
   background: var(--glass);
@@ -2095,6 +2099,167 @@ h1, h2, h3, h4, h5, h6 {
 
   .menu-price {
     font-size: 0.85rem;
+  }
+}
+
+/* ========== EXTRA SMALL (iPhone SE 320px) ========== */
+@media (max-width: 380px) {
+  .hero h1 {
+    font-size: clamp(32px, 14vw, 44px);
+  }
+
+  .heroCard {
+    padding: 16px;
+  }
+
+  .booking {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .booking .field strong {
+    font-size: 0.85rem;
+  }
+
+  .section {
+    padding: 36px 4vw;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .stat b {
+    font-size: 1.5rem;
+  }
+
+  .stat span {
+    font-size: 0.75rem;
+  }
+
+  .room .roomVisual {
+    height: 180px;
+  }
+
+  .room-full .roomVisual {
+    min-height: 180px;
+  }
+
+  .room-body {
+    padding: 16px;
+  }
+
+  .room-body h3 {
+    font-size: 1.2rem;
+  }
+
+  .room-body .price {
+    font-size: 1.1rem;
+  }
+
+  .room-body p {
+    font-size: 0.85rem;
+  }
+
+  .room-body ul li {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+
+  .room-thumbs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .room-thumb {
+    height: 44px;
+  }
+
+  .page-hero {
+    min-height: 35vh;
+    padding: 90px 4vw 32px;
+  }
+
+  .page-hero-content h1 {
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
+  }
+
+  .page-hero-content p {
+    font-size: 0.85rem;
+  }
+
+  .sectionTitle h2 {
+    font-size: 1.5rem;
+  }
+
+  .sectionTitle p {
+    font-size: 0.85rem;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonial-card {
+    padding: 24px 20px;
+  }
+
+  .dish-card,
+  .drink-card {
+    height: 160px;
+  }
+
+  .menu-row-full {
+    padding: 12px 14px;
+  }
+
+  .menu-row-full strong {
+    font-size: 0.85rem;
+  }
+
+  .gallery-page {
+    grid-auto-rows: 180px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+
+  .booking-form {
+    padding: 16px !important;
+  }
+
+  .booking-form h3 {
+    font-size: 1rem;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    font-size: 0.7rem;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    font-size: 0.85rem;
+  }
+
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .gallery {
+    grid-auto-rows: 160px;
+  }
+
+  .galleryItem.big {
+    height: 200px;
+  }
+
+  .footer {
+    padding: 48px 4vw 24px;
   }
 }
 

@@ -3,6 +3,15 @@
 import { motion } from 'framer-motion';
 import { hotel } from '@/data/site';
 
+const particles = [
+  { size: 6, x: '15%', y: '20%', delay: 0, duration: 6 },
+  { size: 4, x: '75%', y: '30%', delay: 1, duration: 8 },
+  { size: 8, x: '45%', y: '70%', delay: 0.5, duration: 7 },
+  { size: 3, x: '85%', y: '60%', delay: 2, duration: 5 },
+  { size: 5, x: '25%', y: '80%', delay: 1.5, duration: 9 },
+  { size: 7, x: '60%', y: '15%', delay: 0.8, duration: 6.5 },
+];
+
 export default function HeroSection() {
   const wa = `https://wa.me/${hotel.whatsapp}?text=Bonjour%20NIKA%20HOTEL,%20je%20souhaite%20faire%20une%20reservation.`;
 
@@ -17,6 +26,29 @@ export default function HeroSection() {
         />
       </div>
       <div className="hero-overlay" style={{ background: 'linear-gradient(135deg, rgba(6,21,47,0.7), rgba(10,60,120,0.4))' }} />
+
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute', left: p.x, top: p.y, zIndex: 2,
+            width: p.size, height: p.size, borderRadius: '50%',
+            background: 'rgba(217,164,65,0.3)',
+            boxShadow: '0 0 20px rgba(217,164,65,0.1)',
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.3, 0.8, 0.3],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
 
       <div className="heroGrid">
         <motion.div
@@ -37,7 +69,7 @@ export default function HeroSection() {
               </svg>
               Réserver maintenant
             </a>
-            <a className="btn btn-outline" href="#rooms">Découvrir les chambres</a>
+            <a className="btn btn-outline" href="/rooms">Découvrir les chambres</a>
           </div>
         </motion.div>
 
