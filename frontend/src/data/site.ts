@@ -20,16 +20,19 @@ export const stats = [
 export const services = [
   {
     title: 'Hébergement',
+    icon: '🏨',
     desc: 'Chambres élégantes et suites premium avec literie haut de gamme, climatisation, WiFi haut débit et service en chambre 24h/24.',
     features: ['Chambres Standards', 'Suites Deluxe', 'Suites Premium', 'Room service 24/7'],
   },
   {
     title: 'Restaurant',
+    icon: '🍽️',
     desc: 'Cuisine africaine et internationale dans un cadre raffiné. Petit-déjeuner, déjeuner et dîner sur place ou en chambre.',
     features: ['Spécialités africaines', 'Cuisine internationale', 'Menu 30 000 FBU+', 'Petit-déjeuner 20 000 FBU'],
   },
   {
     title: 'Bar & Lounge',
+    icon: '🍸',
     desc: 'Ambiance lounge avec cocktails exotiques, vins sélectionnés, bières locales et internationales, et boissons fraîches.',
     features: ['Cocktails premium', 'Vins & champagne', 'Bières locales', 'Soirées privées'],
   },
@@ -121,7 +124,8 @@ export const gallery = [
 ];
 
 export const testimonials = [
-  { name: 'Alice M.', text: 'Un cadre exceptionnel au cœur de Bujumbura. Le personnel est aux petits soins, les chambres sont impeccables.' },
-  { name: 'David K.', text: 'Le restaurant est une vraie découverte. La cuisine africaine est savoureuse et le cadre est élégant.' },
-  { name: 'Sarah N.', text: 'Le bar lounge est parfait pour se détendre après une journée de travail. Je recommande vivement.' },
+  { name: 'Alice M.', role: 'Voyageuse d\'affaires', text: 'Un cadre exceptionnel au cœur de Bujumbura. Le personnel est aux petits soins, les chambres sont impeccables.' },
+  { name: 'David K.', role: 'Touriste', text: 'Le restaurant est une vraie découverte. La cuisine africaine est savoureuse et le cadre est élégant.' },
+  { name: 'Sarah N.', role: 'Cliente régulière', text: 'Le bar lounge est parfait pour se détendre après une journée de travail. Je recommande vivement.' },
+  { name: 'Jean-Pierre M.', role: 'Homme d\'affaires', text: 'Un hôtel d\'un excellent rapport qualité-prix. Le WiFi est stable, le personnel est professionnel et accueillant.' },
 ];

@@ -456,6 +456,14 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
+.section-title {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-family: 'Bodoni Moda', serif;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.15;
+}
+
 .sectionTitle {
   text-align: center;
   margin-bottom: 64px;
@@ -719,6 +727,76 @@ h1, h2, h3, h4, h5, h6 {
 
 .galleryItem:hover .gallery-label {
   opacity: 1;
+}
+
+/* ========== TESTIMONIALS ========== */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 36px 28px;
+  transition: all 0.4s var(--transition-smooth);
+}
+
+.testimonial-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(217,164,65,0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.testimonial-stars {
+  color: var(--gold);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+
+.testimonial-text {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.testimonial-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #1b1305;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Jost', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.testimonial-author strong {
+  display: block;
+  font-family: 'Bodoni Moda', serif;
+  font-size: 1rem;
+  color: var(--white);
+}
+
+.testimonial-author span {
+  font-size: 0.8rem;
+  color: var(--muted);
 }
 
 /* ========== CTA ========== */
@@ -1535,6 +1613,27 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-mobile-btn {
   display: none;
+}
+
+/* ========== ROOM SERVICE QR LOGO ========== */
+.rs-logo {
+  width: 82px;
+  height: 82px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #d9a441, #ffe2a0);
+  color: #1b1305;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Jost', sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  box-shadow: 0 16px 48px rgba(217,164,65,0.25);
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.rs-logo:hover {
+  transform: scale(1.05) rotate(-3deg);
 }
 
 /* ========== SCROLL ANIMATIONS ========== */

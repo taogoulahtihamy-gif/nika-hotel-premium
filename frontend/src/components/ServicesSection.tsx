@@ -32,6 +32,7 @@ export default function ServicesSection() {
         >
           {services.map((s) => (
             <motion.div className="service" key={s.title} variants={item}>
+              <div style={{ fontSize: 40, marginBottom: 16, lineHeight: 1 }}>{s.icon}</div>
               <h3>{s.title}</h3>
               <p>{s.desc}</p>
               <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', display: 'flex', flexWrap: 'wrap', gap: 8 }}>

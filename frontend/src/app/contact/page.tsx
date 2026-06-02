@@ -172,6 +172,21 @@ export default function ContactPage() {
                   </a>
                 </div>
               </div>
+              <div className="glass-card" style={{ padding: 36, marginTop: 24 }}>
+                <h3 style={{ marginBottom: 16 }}>Horaires</h3>
+                <div className="contact-row">
+                  <strong>Réception</strong>
+                  <p>Ouvert 24h/7 — Accueil permanent</p>
+                </div>
+                <div className="contact-row">
+                  <strong>Restaurant</strong>
+                  <p>Petit-déjeuner : 6h30 — 10h30<br/>Déjeuner : 12h — 14h30<br/>Dîner : 18h30 — 22h</p>
+                </div>
+                <div className="contact-row" style={{ border: 'none', marginBottom: 0, paddingBottom: 0 }}>
+                  <strong>Bar & Lounge</strong>
+                  <p>Tous les jours : 16h — 23h</p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>

@@ -1,156 +1,85 @@
-Améliore le module QR Codes et notifications admin du projet NIKA HOTEL.
-
-CONTEXTE :
-Le QR room service fonctionne maintenant et ouvre bien :
-https://nika-hotel-premium.vercel.app/room-service/{roomNumber}
-
-Mais il faut améliorer l’administration.
-
-==================================================
-1. PAGE /admin/qrcodes
-==================================================
-
-À ajouter :
-- Bouton global en haut : “Tout imprimer”
-- Ce bouton doit imprimer tous les QR codes de toutes les chambres en une seule page.
-- La page d’impression doit être propre et professionnelle :
-  - logo NIKA HOTEL
-  - titre : QR Codes Room Service
-  - une carte par chambre
-  - Chambre 101, 102, 103, etc.
-  - type de chambre
-  - QR code grand format
-  - URL sous le QR
-  - consigne : “Scannez pour commander depuis votre chambre”
-- Format impression A4.
-- Mise en page responsive pour impression.
-- Éviter les coupures moches entre cartes avec page-break-inside: avoid.
-- Garder les boutons existants :
-  - Télécharger
-  - Imprimer
-  - Copier URL
-  - Tester
-- Si possible, ajouter “Tout télécharger” en option, mais priorité à “Tout imprimer”.
-
-IMPORTANT :
-Les QR doivent toujours pointer vers :
-https://nika-hotel-premium.vercel.app/room-service/{roomNumber}
-
-Ne jamais utiliser localhost en production.
-
-==================================================
-2. NOTIFICATIONS ADMIN GLOBALES
-==================================================
-
-Problème actuel :
-Les notifications room service ne doivent pas fonctionner uniquement sur /admin/room-service.
-Elles doivent fonctionner dans tout l’espace admin.
+Améliore TOUT le côté client NIKA HOTEL en ultra premium.
 
 Objectif :
-Créer un vrai système de notification admin global.
+Le site client complet doit devenir haut de gamme, mobile-first, parfaitement responsive et cohérent avec l’image luxe hôtel.
+
+Pages concernées :
+- Accueil
+- Chambres
+- Restaurant
+- Bar
+- Galerie
+- Contact
+- Booking
+- Room Service QR : /room-service/[roomNumber]
 
 À faire :
-- Créer un composant global :
-frontend/src/components/admin/AdminNotificationProvider.tsx
+1. Revoir tout le design client
+- bleu nuit + doré
+- glassmorphism premium
+- typographie luxe
+- espacements réguliers
+- cartes plus élégantes
+- boutons homogènes
+- animations légères
+- aucun élément vide
 
-- L’intégrer dans :
-frontend/src/app/admin/layout.tsx
+2. Room Service mobile
+- améliorer la page d’accueil Room Service
+- ajouter fond visuel premium léger
+- rendre les cartes plus luxueuses
+- réduire les grands espaces vides
+- ajouter texte d’accueil plus vendeur
+- ajouter mini statut : “Disponible 24h/7”
+- ajouter bouton “Voir le menu”
+- garder “Appeler la réception”
+- menu après clic uniquement
+- panier sticky bas
+- aucun débordement iPhone/Android
 
-Le provider doit :
-1. Surveiller les nouvelles commandes room service.
-2. Fonctionner sur toutes les pages admin :
-   - /admin/dashboard
-   - /admin/reservations
-   - /admin/rooms
-   - /admin/room-service
-   - /admin/qrcodes
-   - /admin/messages
-   - /admin/gallery
+3. Site public
+- Accueil plus premium
+- sections bien remplies
+- vraies CTA
+- Chambres avec cartes modernes
+- Restaurant avec menu élégant
+- Bar avec carte boissons premium
+- Galerie en grille propre
+- Contact avec carte + WhatsApp + formulaire
+- Booking propre et responsive
 
-3. Afficher un bouton global :
-   “Activer les notifications”
-   car les navigateurs bloquent le son sans interaction utilisateur.
+4. Responsive obligatoire
+- iPhone SE
+- iPhone 13
+- iPhone 15 Pro Max
+- Android
+- tablette
+- desktop
+- pas de scroll horizontal
+- pas de texte coupé
+- pas de boutons énormes
 
-4. Quand une nouvelle commande arrive :
-   - jouer un son
-   - afficher toast : “Nouvelle commande — Chambre 102”
-   - vibrer si compatible :
-     navigator.vibrate([200, 100, 200])
-   - afficher un badge compteur dans la sidebar à côté de “Room Service”
-   - ne pas rejouer le son pour les anciennes commandes déjà vues
+5. Ne pas casser
+- QR codes
+- Room Service
+- Admin
+- Backend Render
+- URL Vercel
+- Notifications admin
 
-5. Le système doit rester actif tant que l’admin navigue dans l’espace admin.
+6. Tests
+Tester :
+/ 
+/rooms
+/restaurant
+/bar
+/gallery
+/contact
+/booking
+/room-service/103
 
-6. Ne pas faire clignoter les pages.
-7. Ne pas utiliser window.location.reload().
-8. Ne pas utiliser router.refresh() en boucle.
-9. Polling silencieux toutes les 5 secondes si WebSocket absent.
-10. Si WebSocket/socket.io existe déjà dans le backend, utiliser WebSocket pour du vrai temps réel.
-
-==================================================
-3. ADMIN ROOM SERVICE
-==================================================
-
-Améliorer la page :
-- Colonnes stables :
-  Nouvelle
-  Préparation
-  Livrée
-  Annulée
-- Ajouter badge de nouvelle commande.
-- Ajouter bouton “Son activé / Son désactivé”.
-- Après changement de statut, update local immédiat.
-- Pas de clignotement.
-- Pas de reload complet.
-
-==================================================
-4. DESIGN
-==================================================
-
-Le design admin doit être plus premium :
-- cartes glassmorphism
-- fond bleu nuit
-- doré cohérent
-- badges clairs
-- boutons bien alignés
-- dashboard plus propre
-- responsive desktop/tablette/mobile
-
-Ne refais pas tout le site public.
-Ne casse pas le design existant.
-Ne modifie que les fichiers nécessaires.
-
-==================================================
-5. TESTS
-==================================================
-
-Tester localement :
-http://localhost:3000/admin/qrcodes
-http://localhost:3000/admin/dashboard
-http://localhost:3000/admin/room-service
-http://localhost:3000/room-service/102
-
-Tests obligatoires :
-1. Cliquer “Tout imprimer” sur QR Codes.
-2. Vérifier que tous les QR apparaissent.
-3. Scanner un QR avec iPhone.
-4. La page doit ouvrir Vercel, pas localhost.
-5. Envoyer une commande depuis téléphone.
-6. Être sur /admin/dashboard.
-7. Vérifier que la notification arrive quand même :
-   - son
-   - toast
-   - badge
-   - vibration si compatible
-8. Aller sur /admin/qrcodes.
-9. Refaire une commande.
-10. Vérifier que notification fonctionne encore.
-11. npm run build sans erreur.
+Build obligatoire :
+npm run build
 
 Résultat attendu :
-- QR codes propres
-- bouton Tout imprimer
-- notification globale admin
-- son/vibration
-- aucune page admin qui clignote
-- build OK
+Un vrai site client hôtelier ultra premium, fluide, responsive, utilisable sur téléphone et cohérent sur toutes les pages.

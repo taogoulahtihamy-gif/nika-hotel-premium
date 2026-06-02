@@ -16,6 +16,12 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.68, -0.55, 0.265, 1.55] as const } },
 };
 
+const roomIcons: Record<string, string> = {
+  'Chambre Standard': '🛏️',
+  'Chambre Deluxe': '✨',
+  'Suite Premium': '👑',
+};
+
 export default function RoomsPage() {
   const [roomThumbs, setRoomThumbs] = useState<Record<string, string>>({});
   const wa = `https://wa.me/${hotel.whatsapp}?text=Bonjour%20NIKA%20HOTEL,%20je%20souhaite%20reserver%20une%20chambre.`;
@@ -53,9 +59,12 @@ export default function RoomsPage() {
 
               return (
                 <motion.article className="room room-full" key={r.name} variants={item}>
-                  <div className="roomVisual" style={{ backgroundImage: `url(${activeThumb})` }} />
+                  <div className="roomVisual" style={{ backgroundImage: `url(${activeThumb})`, position: 'relative' }}>
+                    <span style={{ position: 'absolute', top: 16, left: 16, background: 'rgba(6,21,47,0.7)', backdropFilter: 'blur(12px)', padding: '6px 14px', borderRadius: 999, fontSize: 12, color: '#d9a441', fontWeight: 600 }}>
+                      {roomIcons[r.name] || '🏨'} {r.name}
+                    </span>
+                  </div>
                   <div className="room-body">
-                    <h3>{r.name}</h3>
                     <div className="price">{r.price} <span>{hotel.currency} / nuit</span></div>
                     <p>{r.description}</p>
                     <ul>

@@ -9,6 +9,7 @@ import RestaurantSection from '@/components/RestaurantSection';
 import BarSection from '@/components/BarSection';
 import GallerySection from '@/components/GallerySection';
 import CTASection from '@/components/CTASection';
+import TestimonialsSection from '@/components/TestimonialsSection';
 import Footer from '@/components/Footer';
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
       <RestaurantSection />
       <BarSection />
       <GallerySection />
+      <TestimonialsSection />
       <CTASection />
       <Footer />
     </>

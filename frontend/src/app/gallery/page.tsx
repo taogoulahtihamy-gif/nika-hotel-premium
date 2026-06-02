@@ -18,6 +18,8 @@ const allImages = [
   { src: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200&q=80', label: 'Balcon', category: 'chambres' },
   { src: 'https://images.unsplash.com/photo-1550966871-3ed3cdb51e6a?w=1200&q=80', label: 'Entrée', category: 'hotel' },
   { src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80', label: 'Plat Signature', category: 'restaurant' },
+  { src: 'https://images.unsplash.com/photo-1595576508898-0ad5c879a061?w=1200&q=80', label: 'Salle de Bain Premium', category: 'chambres' },
+  { src: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=1200&q=80', label: 'Extérieur', category: 'hotel' },
 ];
 
 const categories = ['toutes', 'hotel', 'chambres', 'restaurant', 'bar'];

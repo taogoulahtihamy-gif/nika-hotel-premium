@@ -7,7 +7,8 @@ export default function CTASection() {
   const wa = `https://wa.me/${hotel.whatsapp}?text=Bonjour%20NIKA%20HOTEL,%20je%20souhaite%20reserver%20mon%20sejour.`;
 
   return (
-    <section className="cta" id="contact">
+    <section className="cta" id="contact" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' as any }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(6,21,47,0.85), rgba(10,60,120,0.7))', zIndex: 0 }} />
       <div>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -15,11 +16,11 @@ export default function CTASection() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.7, ease: [0.68, -0.55, 0.265, 1.55] as const }}
         >
-          <div className="eyebrow">Réservation directe</div>
+          <div className="eyebrow" style={{ color: '#d9a441' }}>Réservation directe</div>
           <h2>Réservez votre séjour<br/>à NIKA HOTEL</h2>
           <p>
-            {hotel.location}<br />
-            {hotel.phone1} / {hotel.phone2} &bull; {hotel.email}
+            {hotel.address}, {hotel.location}<br />
+            {hotel.phone1} &bull; {hotel.email}
           </p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a className="btn btn-primary" href={wa} target="_blank" rel="noopener noreferrer">
