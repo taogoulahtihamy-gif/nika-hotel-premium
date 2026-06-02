@@ -7,6 +7,7 @@ const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 type Order = {
   id: number;
+  orderNumber: string;
   roomNumber: string;
   items: string;
   total: number;
@@ -16,20 +17,20 @@ type Order = {
 };
 
 const statusColors: Record<string, string> = {
-  new: '#ffa726',
+  received: '#ffa726',
   preparing: '#42a5f5',
+  delivery: '#ab47bc',
   delivered: '#66bb6a',
-  cancelled: '#ef5350',
 };
 
 const statusLabels: Record<string, string> = {
-  new: 'Nouvelle',
+  received: 'Reçue',
   preparing: 'Préparation',
+  delivery: 'Livraison',
   delivered: 'Livrée',
-  cancelled: 'Annulée',
 };
 
-const columns = ['new', 'preparing', 'delivered', 'cancelled'];
+const columns = ['received', 'preparing', 'delivery', 'delivered'];
 
 export default function AdminRoomService() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -54,7 +55,7 @@ export default function AdminRoomService() {
   useEffect(() => { fetchOrders(); resetCount(); }, [fetchOrders, resetCount]);
 
   useEffect(() => {
-    const iv = setInterval(fetchOrders, 6000);
+    const iv = setInterval(fetchOrders, 5000);
     return () => clearInterval(iv);
   }, [fetchOrders]);
 
@@ -95,11 +96,14 @@ export default function AdminRoomService() {
                   const items = parseItems(order.items);
                   return (
                     <div key={order.id} className="glass-card" style={{ padding: 16, fontSize: 13 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                         <strong style={{ color: '#d9a441', fontSize: 15 }}>Ch. {order.roomNumber}</strong>
                         <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11 }}>
                           {new Date(order.createdAt).toLocaleTimeString()}
                         </span>
+                      </div>
+                      <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginBottom: 8 }}>
+                        {order.orderNumber}
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
                         {items.map((item: any, idx: number) => (
@@ -119,13 +123,15 @@ export default function AdminRoomService() {
                         </p>
                       )}
                       <div className="rs-actions">
-                        {order.status === 'new' && (
+                        {order.status === 'received' && (
                           <>
                             <button className="rs-btn rs-btn-accept" onClick={() => updateStatus(order.id, 'preparing')}>Accepter</button>
-                            <button className="rs-btn rs-btn-cancel" onClick={() => updateStatus(order.id, 'cancelled')}>Annuler</button>
                           </>
                         )}
                         {order.status === 'preparing' && (
+                          <button className="rs-btn rs-btn-delivery" onClick={() => updateStatus(order.id, 'delivery')}>En livraison</button>
+                        )}
+                        {order.status === 'delivery' && (
                           <button className="rs-btn rs-btn-deliver" onClick={() => updateStatus(order.id, 'delivered')}>Livrer</button>
                         )}
                       </div>
@@ -146,10 +152,10 @@ export default function AdminRoomService() {
           border: none; cursor: pointer; font-family: 'Jost', sans-serif;
           display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;
         }
-        .rs-btn-accept { background: #42a5f5; color: #fff; }
-        .rs-btn-accept:hover { background: #1e88e5; }
-        .rs-btn-cancel { background: #ef5350; color: #fff; }
-        .rs-btn-cancel:hover { background: #d32f2f; }
+        .rs-btn-accept { background: #ffa726; color: #fff; }
+        .rs-btn-accept:hover { background: #f57c00; }
+        .rs-btn-delivery { background: #ab47bc; color: #fff; }
+        .rs-btn-delivery:hover { background: #8e24aa; }
         .rs-btn-deliver { background: #66bb6a; color: #fff; }
         .rs-btn-deliver:hover { background: #43a047; }
         @media (max-width: 1024px) { .rs-grid { grid-template-columns: repeat(2, 1fr); } }

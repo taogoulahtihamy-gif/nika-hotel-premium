@@ -6,6 +6,7 @@ export const roomServiceRouter = Router();
 roomServiceRouter.get('/menu', roomServiceController.getMenu);
 roomServiceRouter.get('/orders', roomServiceController.getAll);
 roomServiceRouter.get('/orders/room/:roomNumber', roomServiceController.getByRoom);
+roomServiceRouter.get('/orders/number/:orderNumber', roomServiceController.getByOrderNumber);
 roomServiceRouter.post('/orders', roomServiceController.create);
 roomServiceRouter.patch('/orders/:id/status', roomServiceController.updateStatus);
 roomServiceRouter.delete('/orders/:id', roomServiceController.remove);

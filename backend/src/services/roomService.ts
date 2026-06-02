@@ -21,6 +21,10 @@ const menu = [
 const orders: any[] = [];
 let nextId = 1;
 
+function generateOrderNumber(id: number): string {
+  return 'CMD-' + String(id).padStart(3, '0');
+}
+
 export const roomServiceOrderService = {
   getMenu() {
     return menu;
@@ -36,19 +40,29 @@ export const roomServiceOrderService = {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   },
 
+  getByOrderNumber(orderNumber: string) {
+    return orders.find((o) => o.orderNumber === orderNumber) || null;
+  },
+
+  getById(id: number) {
+    return orders.find((o) => o.id === id) || null;
+  },
+
   create(data: {
     roomNumber: string;
     items: string;
     total: number;
     message?: string;
   }) {
+    const id = nextId++;
     const order = {
-      id: nextId++,
+      id,
+      orderNumber: generateOrderNumber(id),
       roomNumber: data.roomNumber,
       items: data.items,
       total: data.total,
       message: data.message ?? null,
-      status: 'new',
+      status: 'received',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

@@ -10,7 +10,7 @@ const createSchema = z.object({
 });
 
 const statusSchema = z.object({
-  status: z.enum(['new', 'preparing', 'delivered', 'cancelled']),
+  status: z.enum(['received', 'preparing', 'delivery', 'delivered']),
 });
 
 function parseId(req: Request): number | null {
@@ -30,6 +30,13 @@ export const roomServiceController = {
   getByRoom(req: Request, res: Response) {
     const roomNumber = String(req.params.roomNumber);
     return res.json({ data: roomServiceOrderService.getByRoom(roomNumber) });
+  },
+
+  getByOrderNumber(req: Request, res: Response) {
+    const orderNumber = String(req.params.orderNumber);
+    const order = roomServiceOrderService.getByOrderNumber(orderNumber);
+    if (!order) return res.status(404).json({ message: 'Commande non trouvée' });
+    return res.json({ data: order });
   },
 
   create(req: Request, res: Response) {

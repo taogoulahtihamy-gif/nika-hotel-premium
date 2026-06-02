@@ -72,7 +72,7 @@ export default function AdminNotificationProvider({ children }: { children: Reac
           return;
         }
 
-        const newOrders = data.filter((o) => o.status === 'new' && !seenIds.current.has(o.id));
+        const newOrders = data.filter((o) => o.status === 'received' && !seenIds.current.has(o.id));
         for (const o of data) seenIds.current.add(o.id);
 
         if (newOrders.length > 0) {
