@@ -17,6 +17,7 @@ export default function AdminQRCodes() {
   const [loading, setLoading] = useState(true);
   const [baseUrl, setBaseUrl] = useState(FRONTEND_URL);
   const [editing, setEditing] = useState(false);
+  const [copied, setCopied] = useState('');
 
   const fetchRooms = () => {
     setLoading(true);
@@ -73,6 +74,14 @@ export default function AdminQRCodes() {
     window.open(buildUrl(roomNumber), '_blank');
   };
 
+  const copyUrl = async (roomNumber: string) => {
+    try {
+      await navigator.clipboard.writeText(buildUrl(roomNumber));
+      setCopied(roomNumber);
+      setTimeout(() => setCopied(''), 2000);
+    } catch {}
+  };
+
   if (loading) return <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: 48 }}>Chargement...</p>;
 
   return (
@@ -113,31 +122,34 @@ export default function AdminQRCodes() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
         {roomNumbers.map((room) => {
           const url = buildUrl(room.number);
           return (
-            <div key={room.number} className="glass-card" style={{ padding: 20, textAlign: 'center' }}>
-              <h3 style={{ fontSize: 16, color: '#fff', marginBottom: 4, fontFamily: "'Bodoni Moda', serif" }}>
+            <div key={room.number} className="glass-card" style={{ padding: 24, textAlign: 'center' }}>
+              <h3 style={{ fontSize: 18, color: '#fff', marginBottom: 4, fontFamily: "'Bodoni Moda', serif" }}>
                 Chambre {room.number}
               </h3>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>{room.name}</p>
-              <div style={{ background: '#fff', borderRadius: 12, padding: 12, display: 'inline-block', marginBottom: 12 }}>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>{room.name}</p>
+              <div style={{ background: '#fff', borderRadius: 16, padding: 16, display: 'inline-block', marginBottom: 16 }}>
                 <QRCodeCanvas
                   id={`qr-${room.number}`}
                   value={url}
-                  size={160}
-                  level="M"
+                  size={280}
+                  level="H"
                   includeMargin
                 />
               </div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', wordBreak: 'break-all', marginBottom: 12 }}>{url}</p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', wordBreak: 'break-all', marginBottom: 14, fontFamily: 'monospace' }}>{url}</p>
               <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button className="btn btn-sm" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }} onClick={() => downloadQR(room.number)}>
                   Télécharger
                 </button>
                 <button className="btn btn-sm btn-primary" onClick={() => printQR(room.number)}>
                   Imprimer
+                </button>
+                <button className="btn btn-sm" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }} onClick={() => copyUrl(room.number)}>
+                  {copied === room.number ? 'Copié ✓' : 'Copier URL'}
                 </button>
                 <button className="btn btn-sm" style={{ background: '#25D366', color: '#fff', border: 'none' }} onClick={() => testUrl(room.number)}>
                   Tester
