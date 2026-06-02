@@ -1,51 +1,94 @@
-=Migrer NIKA HOTEL de SQLite vers PostgreSQL pour production Render.
+Le projet fonctionnait avant la tentative de migration PostgreSQL.
 
-Objectif :
-Utiliser une vraie base PostgreSQL persistante pour :
-- réservations
-- chambres
-- messages
-- room service
-- historique commandes
-- admin
+Objectif : restaurer complètement SQLite et corriger Prisma 7.
 
-À faire :
+Actions à effectuer :
 
-1. Modifier backend/prisma/schema.prisma
+1. Lire :
 
-Remplacer :
+* backend/prisma/schema.prisma
+* backend/prisma.config.ts
+* backend/.env
+
+2. Restaurer SQLite.
+
+Le fichier schema.prisma doit utiliser :
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "sqlite"
 }
+```
 
-par :
+IMPORTANT :
+Ne pas utiliser :
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+```prisma
+url = env("DATABASE_URL")
+```
 
-2. Vérifier que tous les modèles Prisma sont compatibles PostgreSQL.
+car Prisma 7 retourne l'erreur P1012.
 
-3. Ne pas supprimer les modèles existants.
+3. Vérifier prisma.config.ts.
 
-4. Mettre à jour backend/.env.example :
+Le fichier doit contenir :
 
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+```ts
+import { defineConfig, env } from "prisma/config";
 
-5. Adapter si nécessaire les services backend.
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  datasource: {
+    url: env("DATABASE_URL"),
+  },
+});
+```
 
-6. Tester localement avec :
+4. Vérifier backend/.env :
+
+```env
+PORT=5000
+CLIENT_URL=http://localhost:3000
+DATABASE_URL=file:./dev.db
+JWT_SECRET=dev_secret_nika_hotel_2026
+```
+
+5. Corriger automatiquement tous les fichiers impactés.
+
+6. Exécuter :
+
+```bash
 npx prisma generate
 npx prisma db push
 npm run build
+```
 
-7. Ne pas toucher au frontend sauf si nécessaire.
+7. Vérifier qu'il n'y a plus aucune erreur Prisma.
 
-Résultat attendu :
-- build backend OK
-- Prisma PostgreSQL OK
-- les routes API continuent à fonctionner
-- admin account seeded
-- aucune erreur SQLite
+8. Vérifier que :
+
+* Admin login fonctionne
+* Room Service fonctionne
+* QR Codes fonctionnent
+* Historique commandes fonctionne
+* Suivi commandes fonctionne
+* Render fonctionne
+
+9. Si tout est OK :
+
+```bash
+git add .
+git commit -m "Restore SQLite and fix Prisma 7 configuration"
+git push
+```
+
+10. Afficher un rapport final indiquant :
+
+* fichiers modifiés
+* erreurs corrigées
+* résultat des tests
+* statut final du projet

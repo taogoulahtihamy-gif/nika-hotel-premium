@@ -1,6 +1,10 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaLibSql({
+  url: process.env.DATABASE_URL || 'file:./dev.db',
+});
+const prisma = new PrismaClient({ adapter });
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@nikahotel.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';

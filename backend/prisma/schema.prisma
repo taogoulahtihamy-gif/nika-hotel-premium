@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 enum ReservationStatus {
@@ -14,34 +14,34 @@ enum ReservationStatus {
 }
 
 model Room {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
-  slug        String      @unique
+  slug        String   @unique
   description String
   price       Float?
-  currency    String      @default("FBU")
-  capacity    Int         @default(2)
+  currency    String   @default("FBU")
+  capacity    Int      @default(2)
   imageUrl    String?
-  amenities   String      @default("")
-  isAvailable Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  amenities   String   @default("")
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Reservation {
-  id        Int                @id @default(autoincrement())
+  id        Int               @id @default(autoincrement())
   fullName  String
   phone     String
   email     String?
   checkIn   DateTime
   checkOut  DateTime
-  adults    Int                @default(2)
-  children  Int                @default(0)
+  adults    Int               @default(2)
+  children  Int               @default(0)
   roomType  String
   message   String?
-  status    ReservationStatus  @default(pending)
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  status    ReservationStatus @default(pending)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 }
 
 model ContactMessage {

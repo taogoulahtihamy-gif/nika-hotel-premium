@@ -1,6 +1,10 @@
 import { PrismaClient, ReservationStatus } from '@prisma/client';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaLibSql({
+  url: process.env.DATABASE_URL || 'file:./dev.db',
+});
+const prisma = new PrismaClient({ adapter });
 
 export const reservationService = {
   async getAll() {
