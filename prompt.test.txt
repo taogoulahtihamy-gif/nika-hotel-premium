@@ -1,27 +1,51 @@
-Après validation d'une commande :
+=Migrer NIKA HOTEL de SQLite vers PostgreSQL pour production Render.
 
-1. Créer automatiquement un numéro de commande.
+Objectif :
+Utiliser une vraie base PostgreSQL persistante pour :
+- réservations
+- chambres
+- messages
+- room service
+- historique commandes
+- admin
 
-2. Rediriger automatiquement vers une page de suivi.
+À faire :
 
-3. Supprimer le bouton "Nouvelle commande".
+1. Modifier backend/prisma/schema.prisma
 
-4. Ajouter :
-   - 📦 Suivre ma commande
-   - 🏠 Retour accueil chambre
+Remplacer :
 
-5. Ajouter timeline :
-   Reçue
-   Préparation
-   Livraison
-   Livrée
+datasource db {
+  provider = "sqlite"
+}
 
-6. Synchronisation temps réel avec l'admin.
+par :
 
-7. Notification sonore lors des changements de statut.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-8. Vibration Android lors des changements de statut.
+2. Vérifier que tous les modèles Prisma sont compatibles PostgreSQL.
 
-9. Historique des commandes de la chambre.
+3. Ne pas supprimer les modèles existants.
 
-10. Aucun refresh manuel.
+4. Mettre à jour backend/.env.example :
+
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+
+5. Adapter si nécessaire les services backend.
+
+6. Tester localement avec :
+npx prisma generate
+npx prisma db push
+npm run build
+
+7. Ne pas toucher au frontend sauf si nécessaire.
+
+Résultat attendu :
+- build backend OK
+- Prisma PostgreSQL OK
+- les routes API continuent à fonctionner
+- admin account seeded
+- aucune erreur SQLite
