@@ -113,10 +113,10 @@ export default function RoomServicePage() {
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, marginBottom: 32, maxWidth: 280 }}>
             Bienvenue dans votre espace Room Service
           </p>
-          <button onClick={() => setView('menu')} style={{ width: '100%', maxWidth: 320, padding: '18px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg, #d9a441, #ffe2a0)', color: '#1b1305', fontWeight: 700, fontSize: 17, cursor: 'pointer', fontFamily: "'Jost', sans-serif", marginBottom: 12 }}>
+          <button onClick={() => setView('menu')} style={{ width: '100%', maxWidth: 320, height: 48, borderRadius: 999, border: 'none', background: 'linear-gradient(135deg, #d9a441, #ffe2a0)', color: '#1b1305', fontWeight: 700, fontSize: 16, cursor: 'pointer', fontFamily: "'Jost', sans-serif", marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             Commander maintenant
           </button>
-          <a className="btn btn-outline" href={`tel:${hotel.phone1}`} style={{ width: '100%', maxWidth: 320, justifyContent: 'center', padding: '14px' }}>
+          <a href={`tel:${hotel.phone1}`} style={{ width: '100%', maxWidth: 320, height: 44, borderRadius: 999, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#fff', fontWeight: 500, fontSize: 14, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
             Appeler la réception
           </a>
         </div>
@@ -143,10 +143,10 @@ export default function RoomServicePage() {
           Votre commande a été transmise à la réception. Elle sera traitée dans les plus brefs délais.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 320 }}>
-          <button onClick={() => { setView('menu'); setCart([]); setMessage(''); }} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '16px' }}>
+          <button onClick={() => { setView('menu'); setCart([]); setMessage(''); }} style={{ width: '100%', maxWidth: 320, height: 48, borderRadius: 999, border: 'none', background: 'linear-gradient(135deg, #d9a441, #ffe2a0)', color: '#1b1305', fontWeight: 700, fontSize: 16, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             Nouvelle commande
           </button>
-          <a className="btn btn-outline" href={`tel:${hotel.phone1}`} style={{ width: '100%', justifyContent: 'center', padding: '14px' }}>
+          <a href={`tel:${hotel.phone1}`} style={{ width: '100%', maxWidth: 320, height: 44, borderRadius: 999, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#fff', fontWeight: 500, fontSize: 14, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
             Appeler la réception
           </a>
         </div>
@@ -158,8 +158,8 @@ export default function RoomServicePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#06152f', display: 'flex', flexDirection: 'column', paddingBottom: 140, overflowX: 'hidden' }}>
       <div style={{ background: 'linear-gradient(135deg, #0a3c78, #06152f)', padding: '48px 20px 20px', textAlign: 'center', position: 'relative' }}>
-        <button onClick={() => setView('welcome')} style={{ position: 'absolute', left: 16, top: 48, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: 10, padding: '8px 12px', fontSize: 13, cursor: 'pointer', fontFamily: "'Jost', sans-serif" }}>
-          ← Retour
+        <button onClick={() => setView('welcome')} style={{ position: 'absolute', left: 16, top: 48, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: 999, height: 36, padding: '0 16px', fontSize: 13, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
+          ← Retour accueil
         </button>
         <div style={{ fontSize: 11, color: '#d9a441', textTransform: 'uppercase', letterSpacing: 3, marginBottom: 4 }}>NIKA HOTEL</div>
         <h1 style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', margin: 0 }}>Chambre {roomNumber}</h1>
@@ -219,9 +219,10 @@ export default function RoomServicePage() {
                   </div>
                 ) : (
                   <button onClick={() => addToCart(item)} style={{
-                    padding: '8px 18px', borderRadius: 50, border: 'none',
+                    height: 36, padding: '0 18px', borderRadius: 999, border: 'none',
                     background: 'linear-gradient(135deg, #d9a441, #ffe2a0)',
                     color: '#1b1305', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: "'Jost', sans-serif",
+                    display: 'flex', alignItems: 'center', gap: 4,
                   }}>+ Ajouter</button>
                 )}
               </div>
@@ -262,11 +263,11 @@ export default function RoomServicePage() {
               outline: 'none', resize: 'none', boxSizing: 'border-box',
             }} />
             <button onClick={handleSubmit} disabled={submitting} style={{
-              width: '100%', padding: '16px', borderRadius: 14, border: 'none',
+              width: '100%', height: 48, borderRadius: 999, border: 'none',
               background: submitting ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #d9a441, #ffe2a0)',
               color: submitting ? 'rgba(255,255,255,0.5)' : '#1b1305',
               fontWeight: 700, fontSize: 16, cursor: submitting ? 'not-allowed' : 'pointer',
-              fontFamily: "'Jost', sans-serif",
+              fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               {submitting ? 'Envoi en cours...' : `Commander — ${formatPrice(total)}`}
             </button>

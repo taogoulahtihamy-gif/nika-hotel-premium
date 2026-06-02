@@ -118,21 +118,15 @@ export default function AdminRoomService() {
                           &ldquo;{order.message}&rdquo;
                         </p>
                       )}
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      <div className="rs-actions">
                         {order.status === 'new' && (
                           <>
-                            <button className="btn btn-sm" style={{ background: '#42a5f5', color: '#fff', border: 'none' }} onClick={() => updateStatus(order.id, 'preparing')}>
-                              Accepter
-                            </button>
-                            <button className="btn btn-sm" style={{ background: '#ef5350', color: '#fff', border: 'none' }} onClick={() => updateStatus(order.id, 'cancelled')}>
-                              Annuler
-                            </button>
+                            <button className="rs-btn rs-btn-accept" onClick={() => updateStatus(order.id, 'preparing')}>Accepter</button>
+                            <button className="rs-btn rs-btn-cancel" onClick={() => updateStatus(order.id, 'cancelled')}>Annuler</button>
                           </>
                         )}
                         {order.status === 'preparing' && (
-                          <button className="btn btn-sm" style={{ background: '#66bb6a', color: '#fff', border: 'none' }} onClick={() => updateStatus(order.id, 'delivered')}>
-                            Livrer
-                          </button>
+                          <button className="rs-btn rs-btn-deliver" onClick={() => updateStatus(order.id, 'delivered')}>Livrer</button>
                         )}
                       </div>
                     </div>
@@ -146,6 +140,18 @@ export default function AdminRoomService() {
 
       <style>{`
         .rs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .rs-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .rs-btn {
+          height: 32px; padding: 0 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+          border: none; cursor: pointer; font-family: 'Jost', sans-serif;
+          display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;
+        }
+        .rs-btn-accept { background: #42a5f5; color: #fff; }
+        .rs-btn-accept:hover { background: #1e88e5; }
+        .rs-btn-cancel { background: #ef5350; color: #fff; }
+        .rs-btn-cancel:hover { background: #d32f2f; }
+        .rs-btn-deliver { background: #66bb6a; color: #fff; }
+        .rs-btn-deliver:hover { background: #43a047; }
         @media (max-width: 1024px) { .rs-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .rs-grid { grid-template-columns: 1fr; } }
       `}</style>

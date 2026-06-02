@@ -135,8 +135,6 @@ export default function AdminQRCodes() {
     } catch {}
   };
 
-  const testUrl = (roomNumber: string) => window.open(buildUrl(roomNumber), '_blank');
-
   if (loading) return <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: 48 }}>Chargement...</p>;
 
   return (
@@ -177,13 +175,9 @@ export default function AdminQRCodes() {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
-        <button className="btn btn-primary" onClick={printAll} style={{ padding: '12px 28px', fontSize: 15 }}>
-          🖨️ Tout imprimer
-        </button>
-        <button className="btn btn-sm" onClick={downloadAll} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer' }}>
-          Tout télécharger
-        </button>
+      <div className="qr-actions-top">
+        <button className="btn btn-primary" onClick={printAll}>🖨️ Tout imprimer</button>
+        <button className="btn btn-ghost" onClick={downloadAll}>Tout télécharger</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
@@ -213,24 +207,55 @@ export default function AdminQRCodes() {
                 />
               </div>
               <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', wordBreak: 'break-all', marginBottom: 14, fontFamily: 'monospace' }}>{url}</p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <button className="btn btn-sm" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }} onClick={() => downloadQR(room.number)}>
-                  Télécharger
-                </button>
-                <button className="btn btn-sm btn-primary" onClick={() => printSingle(room.number)}>
-                  Imprimer
-                </button>
-                <button className="btn btn-sm" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.15)' }} onClick={() => copyUrl(room.number)}>
+              <div className="qr-card-actions">
+                <button className="btn-sm-qr" onClick={() => downloadQR(room.number)}>Télécharger</button>
+                <button className="btn-sm-qr btn-sm-qr-primary" onClick={() => printSingle(room.number)}>Imprimer</button>
+                <button className="btn-sm-qr" onClick={() => copyUrl(room.number)}>
                   {copied === room.number ? 'Copié ✓' : 'Copier URL'}
-                </button>
-                <button className="btn btn-sm" style={{ background: '#25D366', color: '#fff', border: 'none' }} onClick={() => testUrl(room.number)}>
-                  Tester
                 </button>
               </div>
             </div>
           );
         })}
       </div>
+
+      <style>{`
+        .qr-actions-top {
+          display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;
+        }
+        .qr-actions-top .btn-primary {
+          height: 42px; padding: 0 28px; border-radius: 999px; font-size: 14px;
+        }
+        .qr-actions-top .btn-ghost {
+          height: 42px; padding: 0 20px; border-radius: 999px; font-size: 14px;
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+          color: #fff; cursor: pointer; font-family: 'Jost', sans-serif; font-weight: 500;
+          transition: all 0.2s;
+        }
+        .qr-actions-top .btn-ghost:hover { background: rgba(255,255,255,0.12); }
+        .qr-card-actions {
+          display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+        }
+        .btn-sm-qr {
+          height: 36px; padding: 0 16px; border-radius: 999px; font-size: 13px; font-weight: 500;
+          background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+          color: #fff; cursor: pointer; font-family: 'Jost', sans-serif;
+          transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .btn-sm-qr:hover { background: rgba(255,255,255,0.14); }
+        .btn-sm-qr-primary {
+          background: linear-gradient(135deg, #d9a441, #ffe2a0); color: #1b1305; border: none;
+        }
+        .btn-sm-qr-primary:hover { background: linear-gradient(135deg, #c8932e, #f5d68a); }
+        @media (max-width: 600px) {
+          .qr-card-actions {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+          }
+          .btn-sm-qr { justify-content: center; }
+          .qr-actions-top .btn-primary,
+          .qr-actions-top .btn-ghost { flex: 1; justify-content: center; }
+        }
+      `}</style>
     </div>
   );
 }
