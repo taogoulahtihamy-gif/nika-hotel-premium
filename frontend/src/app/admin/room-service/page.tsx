@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { useAdminNotifications } from '@/components/admin/AdminNotificationProvider';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -30,35 +31,11 @@ const statusLabels: Record<string, string> = {
 
 const columns = ['new', 'preparing', 'delivered', 'cancelled'];
 
-function playNotificationSound() {
-  try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
-    osc.type = 'sine';
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.3);
-  } catch {
-    // ignore silencieusement
-  }
-}
-
 export default function AdminRoomService() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [lastToast, setLastToast] = useState<string | null>(null);
-  const [audioEnabled, setAudioEnabled] = useState(false);
-
-  const seenIds = useRef(new Set<number>());
+  const { resetCount } = useAdminNotifications();
   const prevJson = useRef('');
-  const firstLoad = useRef(true);
 
   const fetchOrders = useCallback(() => {
     fetch(`${API}/api/room-service/orders`)
@@ -68,34 +45,15 @@ export default function AdminRoomService() {
         const json = JSON.stringify(data);
         if (json === prevJson.current) return;
         prevJson.current = json;
-
-        if (firstLoad.current) {
-          firstLoad.current = false;
-          for (const o of data) seenIds.current.add(o.id);
-          setOrders(data);
-          setLoading(false);
-          return;
-        }
-
-        const newOrders = data.filter((o) => o.status === 'new' && !seenIds.current.has(o.id));
-        for (const o of data) seenIds.current.add(o.id);
-
-        if (newOrders.length > 0) {
-          setNotificationCount((c) => c + newOrders.length);
-          setLastToast(`Nouvelle commande Chambre ${newOrders[0].roomNumber}`);
-          if (audioEnabled) playNotificationSound();
-          try { navigator.vibrate?.([200, 100, 200]); } catch {}
-          setTimeout(() => setLastToast(null), 4000);
-        }
-
         setOrders(data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [audioEnabled]);
+  }, []);
+
+  useEffect(() => { fetchOrders(); resetCount(); }, [fetchOrders, resetCount]);
 
   useEffect(() => {
-    fetchOrders();
     const iv = setInterval(fetchOrders, 6000);
     return () => clearInterval(iv);
   }, [fetchOrders]);
@@ -109,9 +67,7 @@ export default function AdminRoomService() {
         body: JSON.stringify({ status }),
       });
       fetchOrders();
-    } catch {
-      fetchOrders();
-    }
+    } catch { fetchOrders(); }
   };
 
   const getOrdersByStatus = (status: string) => orders.filter((o) => o.status === status);
@@ -121,46 +77,9 @@ export default function AdminRoomService() {
   if (loading) return <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', padding: 48 }}>Chargement...</p>;
 
   return (
-    <div style={{ position: 'relative', maxWidth: '100vw', overflowX: 'hidden' }}>
-      {lastToast && (
-        <div style={{
-          position: 'fixed', top: 20, right: 20, zIndex: 9999,
-          background: 'linear-gradient(135deg, #d9a441, #ffe2a0)', color: '#1b1305',
-          padding: '14px 24px', borderRadius: 12, fontWeight: 600, fontSize: 14,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-          animation: 'slideIn 0.3s ease-out',
-        }}>
-          {lastToast}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', marginBottom: 4 }}>Room Service</h1>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, margin: 0 }}>Commandes des chambres</p>
-        </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {notificationCount > 0 && (
-            <span style={{
-              background: '#ef5350', color: '#fff', borderRadius: 50, padding: '4px 12px',
-              fontSize: 12, fontWeight: 700,
-            }}>
-              {notificationCount} nouvelle{notificationCount > 1 ? 's' : ''}
-            </span>
-          )}
-          <button
-            onClick={() => { setAudioEnabled(true); setNotificationCount(0); }}
-            className="btn btn-sm"
-            style={{
-              background: audioEnabled ? 'rgba(102,187,106,0.2)' : 'rgba(255,255,255,0.08)',
-              border: `1px solid ${audioEnabled ? '#66bb6a' : 'rgba(255,255,255,0.15)'}`,
-              color: audioEnabled ? '#66bb6a' : '#fff',
-            }}
-          >
-            {audioEnabled ? 'Notifications activées' : 'Activer les notifications'}
-          </button>
-        </div>
-      </div>
+    <div style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', marginBottom: 4 }}>Room Service</h1>
+      <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: 24, fontSize: 14 }}>Commandes des chambres</p>
 
       {orders.length === 0 ? (
         <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: 48 }}>Aucune commande pour le moment.</p>
@@ -226,21 +145,9 @@ export default function AdminRoomService() {
       )}
 
       <style>{`
-        .rs-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-        }
-        @media (max-width: 1024px) {
-          .rs-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 600px) {
-          .rs-grid { grid-template-columns: 1fr; }
-        }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateX(40px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
+        .rs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        @media (max-width: 1024px) { .rs-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .rs-grid { grid-template-columns: 1fr; } }
       `}</style>
     </div>
   );
