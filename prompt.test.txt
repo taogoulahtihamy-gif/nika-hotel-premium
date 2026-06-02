@@ -1,123 +1,24 @@
-Tu es dans le projet NIKA HOTEL.
+Corrige les QR codes du projet NIKA HOTEL.
 
-Objectif urgent :
-Corriger uniquement le responsive mobile du frontend.
+Problème :
+Quand je scanne le QR code avec téléphone, il ouvre localhost, donc Safari ne peut pas ouvrir la page.
 
-Ne touche pas au backend.
-Ne change pas l'identité visuelle.
-Ne refais pas tout le site.
-Corrige uniquement CSS + composants nécessaires.
+Objectif :
+En production, les QR codes doivent pointer vers :
+https://nika-hotel-premium.vercel.app/room-service/{roomNumber}
 
-PROBLÈMES MOBILE OBSERVÉS :
-- Navbar trop large.
-- Logo NIKA HOTEL prend trop de place.
-- Boutons Réserver / WhatsApp / Burger mal alignés.
-- Menu mobile recouvre le contenu avec mauvaise largeur.
-- Cartes trop larges et débordent horizontalement.
-- Contact page affiche deux colonnes sur mobile au lieu d’une seule.
-- Map déborde à droite.
-- Hero booking card trop grande.
-- Boutons énormes et mal espacés.
-- Textes trop grands sur mobile.
-- Il y a un overflow horizontal.
-- Les sections sont trop longues et mal rythmées.
+En local, ils peuvent pointer vers :
+http://localhost:3000/room-service/{roomNumber}
 
-RÈGLES MOBILE OBLIGATOIRES :
-
-1. Ajouter globalement :
-html, body {
-  overflow-x: hidden;
-  width: 100%;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-2. Tous les containers doivent respecter :
-width: 100%;
-max-width: 100%;
-padding-left/right: 20px maximum sur mobile.
-
-3. Navbar mobile :
-Sur écran <= 768px :
-- hauteur max 72px
-- logo rond NH visible
-- texte "NIKA HOTEL" réduit ou caché si manque de place
-- bouton Réserver compact
-- bouton WhatsApp rond compact
-- burger compact
-- aucun débordement horizontal
-
-4. Menu mobile :
-- position fixed
-- top: 0
-- right: 0
-- width: min(82vw, 340px)
-- height: 100vh
-- padding-top: 110px
-- fond bleu nuit opaque
-- z-index très élevé
-- liens verticaux bien espacés
-- fermer au clic
-
-5. Hero mobile :
-Sur écran <= 768px :
-- layout en 1 colonne
-- titre NIKA HOTEL plus petit :
-  font-size entre 56px et 72px, pas plus
-- texte max-width 100%
-- boutons en colonne ou pleine largeur
-- booking card sous le texte
-- booking card width 100%
-- supprimer les grands décalages
-- min-height raisonnable, pas énorme
-
-6. Cards mobile :
-Toutes les cartes doivent être :
-width: 100%
-max-width: 100%
-grid-template-columns: 1fr
-
-7. Rooms mobile :
-- une chambre par ligne
-- image en haut
-- texte en dessous
-- boutons pleine largeur
-- mini galerie scroll horizontal si besoin, mais sans overflow page
-
-8. Restaurant / Bar mobile :
-- cartes empilées
-- images bien cadrées object-fit cover
-- aucun texte derrière la navbar
-
-9. Contact mobile :
-- coordonnées, map, formulaire doivent être empilés en 1 colonne
-- Google Map width 100%
-- formulaire inputs width 100%
-- boutons width 100%
-
-10. Corriger toutes les sections :
-- page accueil
-- /rooms
-- /restaurant
-- /bar
-- /gallery
-- /contact
-- /booking
-
-11. Ajouter des media queries propres :
-@media (max-width: 1024px)
-@media (max-width: 768px)
-@media (max-width: 480px)
-
-12. Après correction :
-- lancer npm run build
-- vérifier zéro erreur TypeScript
-- ne pas ajouter node_modules ni .next dans Git
-
-Résultat attendu :
-Le site doit être parfaitement lisible sur iPhone.
-Aucun élément ne doit dépasser à droite.
-La navbar doit rester propre.
-Les pages doivent être modernes, alignées et professionnelles sur mobile.
+À faire :
+1. Dans /admin/qrcodes, ne jamais hardcoder localhost comme URL finale.
+2. Créer une constante :
+const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL || "https://nika-hotel-premium.vercel.app";
+3. Les QR doivent générer :
+`${FRONTEND_URL}/room-service/${roomNumber}`
+4. Afficher l’URL sous le QR.
+5. Ajouter un champ pour modifier temporairement l’URL de base.
+6. Le bouton Tester doit ouvrir cette URL.
+7. Ne touche pas au backend.
+8. Ne casse pas le design.
+9. Build sans erreur.
