@@ -15,9 +15,9 @@
     "framer-motion": "latest",
     "lucide-react": "latest",
     "next": "latest",
+    "qrcode.react": "^4.2.0",
     "react": "latest",
     "react-dom": "latest",
     "typescript": "latest"
-  },
-  "devDependencies": {}
+  }
 }

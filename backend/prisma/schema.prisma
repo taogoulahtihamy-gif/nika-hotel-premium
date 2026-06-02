@@ -14,16 +14,18 @@ enum ReservationStatus {
 }
 
 model Room {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
-  slug        String   @unique
+  slug        String      @unique
   description String
   price       Float?
-  currency    String   @default("USD")
-  capacity    Int      @default(2)
+  currency    String      @default("FBU")
+  capacity    Int         @default(2)
   imageUrl    String?
-  isAvailable Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  amenities   String      @default("")
+  isAvailable Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Reservation {
@@ -33,9 +35,38 @@ model Reservation {
   email     String?
   checkIn   DateTime
   checkOut  DateTime
-  guests    Int
+  adults    Int                @default(2)
+  children  Int                @default(0)
   roomType  String
-  notes     String?
+  message   String?
   status    ReservationStatus  @default(pending)
   createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  subject   String   @default("")
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  name     String @default("Admin")
+}
+
+model RoomServiceOrder {
+  id         Int      @id @default(autoincrement())
+  roomNumber String
+  items      String
+  total      Int
+  message    String?
+  status     String   @default("new")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

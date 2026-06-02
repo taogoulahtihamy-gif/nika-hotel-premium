@@ -27,8 +27,20 @@ export const roomService = {
     currency?: string;
     capacity?: number;
     imageUrl?: string;
+    amenities?: string;
   }) {
-    return prisma.room.create({ data });
+    return prisma.room.create({
+      data: {
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        price: data.price ?? null,
+        currency: data.currency ?? 'FBU',
+        capacity: data.capacity ?? 2,
+        imageUrl: data.imageUrl ?? null,
+        amenities: data.amenities ?? '',
+      },
+    });
   },
 
   async update(id: number, data: Partial<{
@@ -39,6 +51,7 @@ export const roomService = {
     currency: string;
     capacity: number;
     imageUrl: string;
+    amenities: string;
     isAvailable: boolean;
   }>) {
     return prisma.room.update({ where: { id }, data });

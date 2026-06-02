@@ -1,0 +1,13 @@
+{
+  "name": "NIKA HOTEL",
+  "short_name": "NIKA HOTEL",
+  "description": "Site premium officiel NIKA HOTEL : hébergement, restaurant, bar et réservation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06152f",
+  "theme_color": "#0a3c78",
+  "icons": [
+    { "src": "/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
