@@ -16,6 +16,9 @@ export default function AdminQRCodes() {
   const [baseUrl, setBaseUrl] = useState(FRONTEND_URL);
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState('');
+  const [searchRoom, setSearchRoom] = useState('');
+  const [filterFloor, setFilterFloor] = useState('all');
+  const printRef = useRef<HTMLDivElement>(null);
 
   const fetchRooms = () => {
     setLoading(true);
@@ -121,6 +124,13 @@ export default function AdminQRCodes() {
     }, 300);
   };
 
+  const floors = [...new Set(roomNumbers.map((r) => r.number.substring(0, 1)))].sort();
+  const filteredRoomNumbers = roomNumbers.filter((r) => {
+    if (searchRoom && !r.number.includes(searchRoom) && !r.name.toLowerCase().includes(searchRoom.toLowerCase())) return false;
+    if (filterFloor !== 'all' && !r.number.startsWith(filterFloor)) return false;
+    return true;
+  });
+
   const downloadAll = () => {
     roomNumbers.forEach((room) => {
       setTimeout(() => downloadQR(room.number), parseInt(room.number) * 30);
@@ -175,13 +185,23 @@ export default function AdminQRCodes() {
         </div>
       )}
 
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+        <input placeholder="Rechercher chambre (101, 102...)" value={searchRoom} onChange={(e) => setSearchRoom(e.target.value)}
+          style={{ flex: 1, minWidth: 160, height: 42, padding: '0 16px', borderRadius: 999, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f8fbff', fontFamily: "'Jost', sans-serif", fontSize: 14, outline: 'none' }} />
+        <select value={filterFloor} onChange={(e) => setFilterFloor(e.target.value)}
+          style={{ height: 42, padding: '0 16px', borderRadius: 999, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f8fbff', fontFamily: "'Jost', sans-serif", fontSize: 14, outline: 'none' }}>
+          <option value="all" style={{ background: '#1a1a2e' }}>Tous les étages</option>
+          {floors.map((f) => <option key={f} value={f} style={{ background: '#1a1a2e' }}>Étage {f}</option>)}
+        </select>
+      </div>
+
       <div className="qr-actions-top">
         <button className="btn btn-primary" onClick={printAll}>🖨️ Tout imprimer</button>
         <button className="btn btn-ghost" onClick={downloadAll}>Tout télécharger</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
-        {roomNumbers.map((room) => {
+      <div ref={printRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+        {filteredRoomNumbers.map((room) => {
           const url = buildUrl(room.number);
           return (
             <div key={room.number} className="glass-card" style={{ padding: 24, textAlign: 'center' }}>
