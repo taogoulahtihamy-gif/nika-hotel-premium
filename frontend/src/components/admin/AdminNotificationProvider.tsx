@@ -4,25 +4,46 @@ import { createContext, useContext, useEffect, useRef, useState, useCallback } f
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+type NotificationItem = {
+  id: string;
+  type: 'order_new' | 'order_status' | 'reservation' | 'message' | 'reception_call';
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  link?: string;
+};
+
 type Order = {
   id: number;
+  orderNumber: string;
   roomNumber: string;
   status: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 type NotificationContextType = {
+  notifications: NotificationItem[];
   notificationCount: number;
   audioEnabled: boolean;
   toggleAudio: () => void;
   resetCount: () => void;
-  lastToast: string | null;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  clearHistory: () => void;
+  lastToast: { message: string; type: 'order' | 'info' | 'warning' } | null;
 };
 
 const NotificationContext = createContext<NotificationContextType>({
+  notifications: [],
   notificationCount: 0,
   audioEnabled: false,
   toggleAudio: () => {},
   resetCount: () => {},
+  markAsRead: () => {},
+  markAllAsRead: () => {},
+  clearHistory: () => {},
   lastToast: null,
 });
 
@@ -42,51 +63,82 @@ function playNotificationSound() {
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.3);
-  } catch {
-    // ignore
-  }
+  } catch {}
+}
+
+function addNotification(
+  list: NotificationItem[],
+  item: Omit<NotificationItem, 'id' | 'timestamp' | 'read'>
+): NotificationItem[] {
+  const id = `${item.type}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  return [{ ...item, id, timestamp: Date.now(), read: false }, ...list].slice(0, 100);
 }
 
 export default function AdminNotificationProvider({ children }: { children: React.ReactNode }) {
-  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [audioEnabled, setAudioEnabled] = useState(false);
-  const [lastToast, setLastToast] = useState<string | null>(null);
+  const [lastToast, setLastToast] = useState<NotificationContextType['lastToast']>(null);
 
-  const seenIds = useRef(new Set<number>());
-  const prevJson = useRef('');
+  const ordersRef = useRef<Order[]>([]);
+  const prevOrdersJson = useRef('');
   const firstLoad = useRef(true);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((message: string, type: 'order' | 'info' | 'warning') => {
+    setLastToast({ message, type });
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setLastToast(null), 4000);
+  }, []);
+
+  const notify = useCallback((item: Omit<NotificationItem, 'id' | 'timestamp' | 'read'>) => {
+    setNotifications((prev) => addNotification(prev, item));
+    showToast(item.message, item.type === 'order_new' ? 'order' : 'info');
+    if (audioEnabled) playNotificationSound();
+    try { navigator.vibrate?.([200, 100, 200]); } catch {}
+  }, [audioEnabled, showToast]);
 
   const fetchOrders = useCallback(() => {
     fetch(`${API}/api/room-service/orders`)
       .then((r) => r.json())
       .then((j) => {
         const data = (j.data || []) as Order[];
-        const json = JSON.stringify(data);
-        if (json === prevJson.current) return;
-        prevJson.current = json;
+        const json = JSON.stringify(data.map((o) => `${o.id}:${o.status}`));
+        if (json === prevOrdersJson.current) return;
+        prevOrdersJson.current = json;
 
         if (firstLoad.current) {
           firstLoad.current = false;
-          for (const o of data) seenIds.current.add(o.id);
+          ordersRef.current = data;
           return;
         }
 
-        const newOrders = data.filter((o) => o.status === 'received' && !seenIds.current.has(o.id));
-        for (const o of data) seenIds.current.add(o.id);
+        const prev = ordersRef.current;
+        ordersRef.current = data;
 
-        if (newOrders.length > 0) {
-          setNotificationCount((c) => c + newOrders.length);
-          const msg = `Nouvelle commande — Chambre ${newOrders[0].roomNumber}`;
-          setLastToast(msg);
-          if (audioEnabled) playNotificationSound();
-          try { navigator.vibrate?.([200, 100, 200]); } catch {}
-          if (toastTimer.current) clearTimeout(toastTimer.current);
-          toastTimer.current = setTimeout(() => setLastToast(null), 4000);
+        const prevMap = new Map(prev.map((o) => [o.id, o]));
+        for (const order of data) {
+          const prevOrder = prevMap.get(order.id);
+          if (!prevOrder) {
+            if (order.status === 'received') {
+              notify({
+                type: 'order_new',
+                title: 'Nouvelle commande',
+                message: `Chambre ${order.roomNumber} — ${order.orderNumber}`,
+                link: '/admin/room-service',
+              });
+            }
+          } else if (prevOrder.status !== order.status) {
+            notify({
+              type: 'order_status',
+              title: 'Changement de statut',
+              message: `Chambre ${order.roomNumber} — ${order.orderNumber} : ${order.status}`,
+              link: '/admin/room-service',
+            });
+          }
         }
       })
       .catch(() => {});
-  }, [audioEnabled]);
+  }, [notify]);
 
   useEffect(() => {
     fetchOrders();
@@ -95,10 +147,26 @@ export default function AdminNotificationProvider({ children }: { children: Reac
   }, [fetchOrders]);
 
   const toggleAudio = useCallback(() => setAudioEnabled((p) => !p), []);
-  const resetCount = useCallback(() => setNotificationCount(0), []);
+  const resetCount = useCallback(() => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  }, []);
+  const markAsRead = useCallback((id: string) => {
+    setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
+  }, []);
+  const markAllAsRead = useCallback(() => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  }, []);
+  const clearHistory = useCallback(() => {
+    setNotifications([]);
+  }, []);
+
+  const notificationCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <NotificationContext.Provider value={{ notificationCount, audioEnabled, toggleAudio, resetCount, lastToast }}>
+    <NotificationContext.Provider value={{
+      notifications, notificationCount, audioEnabled, toggleAudio, resetCount,
+      markAsRead, markAllAsRead, clearHistory, lastToast,
+    }}>
       {children}
     </NotificationContext.Provider>
   );

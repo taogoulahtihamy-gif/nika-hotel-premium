@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import AdminNotificationProvider, { useAdminNotifications } from '@/components/admin/AdminNotificationProvider';
+import NotificationCenter from '@/components/admin/NotificationCenter';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
@@ -27,16 +28,22 @@ function AdminLayoutInner({ children, admin, handleLogout }: { children: React.R
       {lastToast && (
         <div style={{
           position: 'fixed', top: 20, right: 20, zIndex: 9999,
-          background: 'linear-gradient(135deg, #d9a441, #ffe2a0)', color: '#1b1305',
+          background: lastToast.type === 'order'
+            ? 'linear-gradient(135deg, #d9a441, #ffe2a0)'
+            : lastToast.type === 'warning'
+            ? 'linear-gradient(135deg, #ef5350, #ff7043)'
+            : 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(16px)',
+          color: lastToast.type === 'order' ? '#1b1305' : '#fff',
           padding: '14px 24px', borderRadius: 12, fontWeight: 600, fontSize: 14,
           boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
           animation: 'slideIn 0.3s ease-out',
+          maxWidth: 360,
         }}>
-          {lastToast}
+          {lastToast.message}
         </div>
       )}
 
-      {/* Mobile header */}
       <div className="admin-mobile-header">
         <span style={{ fontSize: 20, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff' }}>NIKA</span>
         <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer' }}>
@@ -44,13 +51,15 @@ function AdminLayoutInner({ children, admin, handleLogout }: { children: React.R
         </button>
       </div>
 
-      {/* Sidebar overlay */}
       {menuOpen && <div className="sidebar-overlay" onClick={() => setMenuOpen(false)} />}
 
       <aside className={`admin-sidebar ${menuOpen ? 'open' : ''}`}>
-        <div style={{ padding: '28px 24px 24px' }}>
-          <Link href="/" style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', textDecoration: 'none' }}>NIKA HOTEL</Link>
-          <div style={{ color: '#d9a441', fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, marginTop: 4 }}>Admin Panel</div>
+        <div style={{ padding: '28px 24px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <Link href="/" style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', textDecoration: 'none' }}>NIKA HOTEL</Link>
+            <div style={{ color: '#d9a441', fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, marginTop: 4 }}>Admin Panel</div>
+          </div>
+          <NotificationCenter />
         </div>
         <nav style={{ flex: 1, padding: '0 12px' }}>
           {navItems.map((item) => (
@@ -69,8 +78,8 @@ function AdminLayoutInner({ children, admin, handleLogout }: { children: React.R
           ))}
         </nav>
         <div className="sidebar-footer">
-          <button onClick={() => { toggleAudio(); if (!audioEnabled) resetCount(); }} className={`audio-btn ${audioEnabled ? 'on' : ''}`}>
-            {audioEnabled ? '🔊 Son activé' : '🔇 Notifications'}
+          <button onClick={toggleAudio} className={`audio-btn ${audioEnabled ? 'on' : ''}`}>
+            {audioEnabled ? '🔊 Son activé' : '🔇 Activer son'}
           </button>
           <div className="admin-email">{admin?.email}</div>
           <button onClick={handleLogout} className="logout-btn">Déconnexion</button>

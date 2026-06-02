@@ -1,94 +1,174 @@
-Le projet fonctionnait avant la tentative de migration PostgreSQL.
+NIKA HOTEL — NOTIFICATIONS TEMPS RÉEL PREMIUM ADMIN + CLIENT
 
-Objectif : restaurer complètement SQLite et corriger Prisma 7.
+Contexte :
+Le projet fonctionne actuellement.
+SQLite + Prisma 7 sont restaurés.
+Room Service, QR Codes, historique et tracking fonctionnent.
+Ne pas toucher à PostgreSQL.
+Ne pas casser SQLite.
+Ne pas casser Render/Vercel.
 
-Actions à effectuer :
+Objectif :
+Ajouter un vrai système de notifications premium en temps réel pour l’admin et le client.
 
-1. Lire :
+==================================================
+1. NOTIFICATIONS ADMIN GLOBALES
+==================================================
 
-* backend/prisma/schema.prisma
-* backend/prisma.config.ts
-* backend/.env
+Créer un système global disponible sur toutes les pages admin :
 
-2. Restaurer SQLite.
+- /admin/dashboard
+- /admin/room-service
+- /admin/reservations
+- /admin/rooms
+- /admin/qrcodes
+- /admin/messages
+- /admin/gallery
 
-Le fichier schema.prisma doit utiliser :
+Quand une nouvelle commande Room Service arrive :
 
-```prisma
-generator client {
-  provider = "prisma-client-js"
-}
+- toast premium
+- son court
+- vibration mobile si compatible
+- badge rouge compteur
+- historique dans centre de notifications
+- menu Room Service avec badge
+- aucune obligation d’être sur la page Room Service
 
-datasource db {
-  provider = "sqlite"
-}
-```
+Interdits :
+- pas de reload
+- pas de clignotement
+- pas de router.refresh automatique
+- ne pas vider les données avant refetch
 
-IMPORTANT :
-Ne pas utiliser :
+==================================================
+2. CENTRE DE NOTIFICATIONS ADMIN
+==================================================
 
-```prisma
-url = env("DATABASE_URL")
-```
+Ajouter une cloche dans le header admin.
 
-car Prisma 7 retourne l'erreur P1012.
+Fonctions :
 
-3. Vérifier prisma.config.ts.
+- compteur notifications non lues
+- liste des notifications
+- marquer comme lu
+- tout marquer comme lu
+- vider l’historique
+- design ultra premium bleu nuit + doré
 
-Le fichier doit contenir :
+Types de notifications :
 
-```ts
-import { defineConfig, env } from "prisma/config";
+- Nouvelle commande Room Service
+- Changement de statut commande
+- Nouvelle réservation
+- Nouveau message client
+- Appel réception depuis une chambre
 
-export default defineConfig({
-  schema: "prisma/schema.prisma",
-  datasource: {
-    url: env("DATABASE_URL"),
-  },
-});
-```
+==================================================
+3. NOTIFICATIONS CLIENT
+==================================================
 
-4. Vérifier backend/.env :
+Sur la page tracking :
 
-```env
-PORT=5000
-CLIENT_URL=http://localhost:3000
-DATABASE_URL=file:./dev.db
-JWT_SECRET=dev_secret_nika_hotel_2026
-```
+/room-service/[room]/tracking/[orderId]
 
-5. Corriger automatiquement tous les fichiers impactés.
+Quand l’admin change le statut :
 
-6. Exécuter :
+- Reçue
+- Préparation
+- Livraison
+- Livrée
+- Annulée
 
-```bash
-npx prisma generate
-npx prisma db push
-npm run build
-```
+Le client doit voir la mise à jour sans refresh.
 
-7. Vérifier qu'il n'y a plus aucune erreur Prisma.
+Afficher toast premium :
 
-8. Vérifier que :
+- Votre commande est en préparation
+- Votre commande est en cours de livraison
+- Votre commande a été livrée
+- Votre commande a été annulée
 
-* Admin login fonctionne
-* Room Service fonctionne
-* QR Codes fonctionnent
-* Historique commandes fonctionne
-* Suivi commandes fonctionne
-* Render fonctionne
+Ajouter :
+- son notification
+- vibration Android si compatible
+- animation timeline
 
-9. Si tout est OK :
+==================================================
+4. SON
+==================================================
 
-```bash
-git add .
-git commit -m "Restore SQLite and fix Prisma 7 configuration"
-git push
-```
+Ajouter un son court :
 
-10. Afficher un rapport final indiquant :
+/public/sounds/notification.mp3
 
-* fichiers modifiés
-* erreurs corrigées
-* résultat des tests
-* statut final du projet
+Si impossible d’ajouter un fichier mp3, utiliser Web Audio API pour générer un bip premium court.
+
+Important :
+Le son doit être activé après interaction utilisateur :
+bouton “Activer les notifications”.
+
+==================================================
+5. TEMPS RÉEL
+==================================================
+
+Si Socket.IO existe déjà, l’utiliser.
+
+Sinon, créer une solution simple et stable :
+
+- polling discret toutes les 5 secondes
+- sans clignotement
+- sans reload
+- comparaison par id/date/statut
+- ne notifier que les nouveautés ou changements réels
+- ne pas rejouer les anciennes notifications
+
+==================================================
+6. DESIGN
+==================================================
+
+Tout doit rester ultra premium :
+
+- bleu nuit
+- doré
+- glassmorphism
+- badges propres
+- animations légères
+- responsive mobile/tablette/desktop
+- aucun débordement horizontal
+
+==================================================
+7. TESTS OBLIGATOIRES
+==================================================
+
+Tester :
+
+1. Ouvrir /admin/dashboard
+2. Activer les notifications
+3. Depuis téléphone, scanner QR chambre 101
+4. Passer commande
+5. Vérifier notification admin sur dashboard
+6. Aller sur /admin/qrcodes
+7. Passer une autre commande
+8. Vérifier notification admin même hors Room Service
+9. Aller sur tracking client
+10. Modifier statut côté admin
+11. Vérifier mise à jour client sans refresh
+12. Vérifier son
+13. Vérifier vibration si compatible
+14. Vérifier absence de clignotement
+15. Vérifier npm run build backend et frontend
+
+==================================================
+8. INTERDICTIONS
+==================================================
+
+Ne pas modifier :
+- schema.prisma vers PostgreSQL
+- DATABASE_URL
+- configuration SQLite
+- URLs Render/Vercel
+- logique QR existante
+
+Résultat attendu :
+Un vrai système de notifications hôtelières premium, global, stable, sans clignotement, avec son, vibration, badge, centre de notifications et suivi client temps réel.
