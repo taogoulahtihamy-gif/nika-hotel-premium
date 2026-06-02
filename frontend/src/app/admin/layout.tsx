@@ -54,12 +54,9 @@ function AdminLayoutInner({ children, admin, handleLogout }: { children: React.R
       {menuOpen && <div className="sidebar-overlay" onClick={() => setMenuOpen(false)} />}
 
       <aside className={`admin-sidebar ${menuOpen ? 'open' : ''}`}>
-        <div style={{ padding: '28px 24px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <Link href="/" style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', textDecoration: 'none' }}>NIKA HOTEL</Link>
-            <div style={{ color: '#d9a441', fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, marginTop: 4 }}>Admin Panel</div>
-          </div>
-          <NotificationCenter />
+        <div style={{ padding: '28px 24px 24px' }}>
+          <Link href="/" style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', textDecoration: 'none' }}>NIKA HOTEL</Link>
+          <div style={{ color: '#d9a441', fontSize: 11, textTransform: 'uppercase', letterSpacing: 3, marginTop: 4 }}>Admin Panel</div>
         </div>
         <nav style={{ flex: 1, padding: '0 12px' }}>
           {navItems.map((item) => (
@@ -86,7 +83,13 @@ function AdminLayoutInner({ children, admin, handleLogout }: { children: React.R
         </div>
       </aside>
 
-      <main className="admin-main">{children}</main>
+      <main className="admin-main">
+        <div className="admin-topbar">
+          <div />
+          <NotificationCenter />
+        </div>
+        {children}
+      </main>
 
       <style>{`
         .admin-mobile-header {
@@ -130,6 +133,11 @@ function AdminLayoutInner({ children, admin, handleLogout }: { children: React.R
         .admin-email { color: rgba(255,255,255,0.3); font-size: 11px; text-align: center; }
         .logout-btn { background: none; border: none; color: #ef5350; cursor: pointer; font-size: 13px; font-family: 'Jost', sans-serif; text-align: center; padding: 4px; }
         .admin-main { flex: 1; padding: 32px; overflow: auto; min-height: 100vh; }
+        .admin-topbar {
+          display: flex; align-items: center; justify-content: flex-end;
+          padding-bottom: 16px; margin-bottom: 8px;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
 
         @keyframes slideIn {
           from { opacity: 0; transform: translateX(40px); }

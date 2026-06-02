@@ -1,91 +1,30 @@
-CORRECTION NOTIFICATION CENTER NIKA HOTEL
+Corrige définitivement la position des notifications admin.
 
 Problème :
-Le centre de notifications est actuellement rendu dans la sidebar.
-Il s'ouvre à l'intérieur du menu gauche et coupe l'interface.
+La cloche est dans la sidebar gauche. Le centre de notifications s’ouvre encore dans la sidebar et coupe l’affichage.
 
 Objectif :
-Transformer le centre de notifications en vrai dropdown flottant premium.
+Déplacer la cloche hors sidebar.
 
 À faire :
 
-1. Retirer complètement le dropdown du flux de la sidebar.
-
-2. Utiliser :
-position: fixed
-
-ou
-
-position: absolute
-
-avec portail React.
-
-3. Le panneau doit apparaître :
-
-Desktop :
-- sous la cloche
-- aligné à droite
-- largeur 380px
-- hauteur max 500px
-- scroll interne
-
-Mobile :
-- drawer plein écran
-ou
-- bottom sheet premium
-
-4. Ajouter :
-
-Titre :
-Notifications
-
-Sous-titre :
-Historique des événements
-
-5. Afficher :
-
-- icône
-- titre
-- chambre
-- heure
-- statut lu/non lu
-
-6. Cartes premium :
-
-Nouvelle commande
-Changement statut
-Nouvelle réservation
-Nouveau message
-
-7. Animation :
-
-opacity
-translateY
-200ms
-
-8. Z-index :
-
-9999
-
-9. Le panneau ne doit jamais :
-- déplacer la sidebar
-- pousser le contenu
-- chevaucher la navigation
-
+1. Retirer la cloche du logo/sidebar admin.
+2. Créer un header admin global dans la zone principale.
+3. Placer la cloche en haut à droite du contenu, à côté des actions de page.
+4. Le dropdown doit s’ouvrir sous la cloche, aligné à droite.
+5. Width desktop : 380px.
+6. Width mobile : 92vw.
+7. Position : fixed ou portal React.
+8. Z-index : 9999.
+9. Le panneau ne doit jamais chevaucher le menu gauche.
 10. Garder :
-
-- badge rouge
-- compteur
-- Tout lu
-- Vider
-- son
-- vibration
-- historique
+   - badge rouge
+   - son activé
+   - Tout lu
+   - Vider
+   - historique
+   - notifications globales
 
 Résultat attendu :
-
-Quand je clique sur la cloche :
-
-une vraie fenêtre premium flottante apparaît au-dessus de la page comme Stripe, Notion ou Slack.
-
-Aucun élément du menu admin ne doit être recouvert.
+La sidebar contient seulement navigation + bouton son + compte admin.
+La cloche notification est dans le header principal admin, en haut à droite, avec dropdown propre.
