@@ -1,40 +1,91 @@
-Corrige l’affichage du centre de notifications admin.
+CORRECTION NOTIFICATION CENTER NIKA HOTEL
 
 Problème :
-Sur desktop, le dropdown de notification apparaît mal dans la sidebar, trop large et décalé. Il couvre le menu admin et donne un rendu cassé.
+Le centre de notifications est actuellement rendu dans la sidebar.
+Il s'ouvre à l'intérieur du menu gauche et coupe l'interface.
 
-À corriger :
-1. La cloche doit rester propre dans le header/sidebar.
-2. Le dropdown doit s’ouvrir :
-   - aligné à droite de la cloche
-   - largeur max 320px desktop
-   - largeur 90vw mobile
-   - jamais hors écran
-   - z-index élevé
-3. Si aucune notification :
-   afficher une petite carte propre :
-   “Aucune notification”
-4. Ne pas laisser un grand panneau vide.
-5. Sur mobile :
-   ouvrir en panneau plein largeur propre ou bottom sheet.
-6. Garder design premium :
-   bleu nuit
-   doré
-   glassmorphism
-   border-radius 20px
-   shadow légère
-7. Ne pas casser :
-   - notifications
-   - son
-   - vibration
-   - badges
-   - admin layout
+Objectif :
+Transformer le centre de notifications en vrai dropdown flottant premium.
 
-Tester :
-/admin/qrcodes
-/admin/dashboard
-/admin/room-service
-/admin/messages
+À faire :
+
+1. Retirer complètement le dropdown du flux de la sidebar.
+
+2. Utiliser :
+position: fixed
+
+ou
+
+position: absolute
+
+avec portail React.
+
+3. Le panneau doit apparaître :
+
+Desktop :
+- sous la cloche
+- aligné à droite
+- largeur 380px
+- hauteur max 500px
+- scroll interne
+
+Mobile :
+- drawer plein écran
+ou
+- bottom sheet premium
+
+4. Ajouter :
+
+Titre :
+Notifications
+
+Sous-titre :
+Historique des événements
+
+5. Afficher :
+
+- icône
+- titre
+- chambre
+- heure
+- statut lu/non lu
+
+6. Cartes premium :
+
+Nouvelle commande
+Changement statut
+Nouvelle réservation
+Nouveau message
+
+7. Animation :
+
+opacity
+translateY
+200ms
+
+8. Z-index :
+
+9999
+
+9. Le panneau ne doit jamais :
+- déplacer la sidebar
+- pousser le contenu
+- chevaucher la navigation
+
+10. Garder :
+
+- badge rouge
+- compteur
+- Tout lu
+- Vider
+- son
+- vibration
+- historique
 
 Résultat attendu :
-La notification est propre, lisible, alignée, sans chevaucher brutalement la sidebar.
+
+Quand je clique sur la cloche :
+
+une vraie fenêtre premium flottante apparaît au-dessus de la page comme Stripe, Notion ou Slack.
+
+Aucun élément du menu admin ne doit être recouvert.
