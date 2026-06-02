@@ -28,7 +28,7 @@ export const roomServiceController = {
   },
 
   getByRoom(req: Request, res: Response) {
-    const { roomNumber } = req.params;
+    const roomNumber = String(req.params.roomNumber);
     return res.json({ data: roomServiceOrderService.getByRoom(roomNumber) });
   },
 
