@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { hotel } from '@/data/site';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import RoomServiceTracking from '@/components/room-service/RoomServiceTracking';
+import { Order, statusIndex, statusSteps, API } from '@/components/room-service/types';
 
 type MenuItem = {
   name: string;
@@ -17,18 +17,6 @@ type CartItem = {
   price: number;
   quantity: number;
   category: string;
-};
-
-type Order = {
-  id: number;
-  orderNumber: string;
-  roomNumber: string;
-  items: string;
-  total: number;
-  message: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
 const categories = [
@@ -49,50 +37,9 @@ const quickCards = [
   { id: 'Réception', label: 'Réception', emoji: '📞', desc: 'Assistance' },
 ];
 
-const statusSteps = [
-  { key: 'received', label: 'Reçue', emoji: '✅' },
-  { key: 'preparing', label: 'Préparation', emoji: '👨‍🍳' },
-  { key: 'delivery', label: 'Livraison', emoji: '🛵' },
-  { key: 'delivered', label: 'Livrée', emoji: '🎉' },
-];
-
-const statusIndex: Record<string, number> = {
-  received: 0,
-  preparing: 1,
-  delivery: 2,
-  delivered: 3,
-};
-
-const statusLabels: Record<string, string> = {
-  received: 'Commande reçue par la réception',
-  preparing: 'Votre commande est en cours de préparation',
-  delivery: 'Votre commande est en cours de livraison',
-  delivered: 'Votre commande a été livrée',
-};
-
-function playNotificationSound() {
-  try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.setValueAtTime(660, ctx.currentTime);
-    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
-    osc.type = 'sine';
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.35);
-  } catch {}
-}
-
-function vibrate() {
-  try { navigator.vibrate?.([100, 80, 100]); } catch {}
-}
-
 export default function RoomServicePage() {
   const { roomNumber } = useParams<{ roomNumber: string }>();
+  const router = useRouter();
   const [view, setView] = useState<'welcome' | 'menu' | 'tracking' | 'history'>('welcome');
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
@@ -102,10 +49,8 @@ export default function RoomServicePage() {
   const [error, setError] = useState('');
   const cartRef = useRef<HTMLDivElement>(null);
 
-  const [lastOrder, setLastOrder] = useState<Order | null>(null);
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
   const [history, setHistory] = useState<Order[]>([]);
-  const prevStatusRef = useRef<string>('');
 
   useEffect(() => {
     fetch(`${API}/api/room-service/menu`)
@@ -120,27 +65,6 @@ export default function RoomServicePage() {
     }
   }, [cart.length]);
 
-  useEffect(() => {
-    if (!trackingOrder || view !== 'tracking') return;
-    const iv = setInterval(async () => {
-      try {
-        const res = await fetch(`${API}/api/room-service/orders/number/${trackingOrder.orderNumber}`);
-        const json = await res.json();
-        if (json.data) {
-          const newStatus = json.data.status;
-          const oldStatus = prevStatusRef.current;
-          if (oldStatus && oldStatus !== newStatus) {
-            playNotificationSound();
-            vibrate();
-          }
-          prevStatusRef.current = newStatus;
-          setTrackingOrder(json.data);
-        }
-      } catch {}
-    }, 3000);
-    return () => clearInterval(iv);
-  }, [trackingOrder, view]);
-
   const fetchHistory = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/room-service/orders/room/${roomNumber}`);
@@ -152,6 +76,18 @@ export default function RoomServicePage() {
   useEffect(() => {
     if (view === 'history') fetchHistory();
   }, [view, fetchHistory]);
+
+  useEffect(() => {
+    if (view !== 'tracking' || !trackingOrder) return;
+    const iv = setInterval(async () => {
+      try {
+        const res = await fetch(`${API}/api/room-service/orders/number/${trackingOrder.orderNumber}`);
+        const json = await res.json();
+        if (json.data) setTrackingOrder(json.data);
+      } catch {}
+    }, 3000);
+    return () => clearInterval(iv);
+  }, [trackingOrder, view]);
 
   const addToCart = useCallback((item: MenuItem) => {
     setCart((prev) => {
@@ -192,8 +128,6 @@ export default function RoomServicePage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || 'Erreur');
       const order = json.data as Order;
-      prevStatusRef.current = order.status;
-      setLastOrder(order);
       setTrackingOrder(order);
       setView('tracking');
     } catch (err: any) {
@@ -204,6 +138,10 @@ export default function RoomServicePage() {
   };
 
   const filteredItems = menu.filter((i) => i.category === activeCategory);
+
+  const openTracking = (order: Order) => {
+    router.push(`/room-service/${roomNumber}/tracking/${order.orderNumber}`);
+  };
 
   /* ───── WELCOME SCREEN ───── */
   if (view === 'welcome') {
@@ -271,71 +209,13 @@ export default function RoomServicePage() {
 
   /* ───── TRACKING SCREEN ───── */
   if (view === 'tracking' && trackingOrder) {
-    const currentIdx = statusIndex[trackingOrder.status] ?? 0;
     return (
-      <div style={{ minHeight: '100dvh', background: '#06152f', display: 'flex', flexDirection: 'column', padding: '60px 24px 32px', alignItems: 'center' }}>
-        <div className="rs-logo" style={{ width: 60, height: 60, fontSize: 22, marginBottom: 16 }}>NH</div>
-        <div style={{ fontSize: 11, color: '#d9a441', textTransform: 'uppercase', letterSpacing: 3, marginBottom: 4, fontWeight: 500 }}>NIKA HOTEL</div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Bodoni Moda', serif", color: '#fff', margin: '0 0 4px' }}>
-          Suivi de commande
-        </h1>
-        <div style={{ fontSize: 14, color: '#d9a441', fontWeight: 600, marginBottom: 4 }}>{trackingOrder.orderNumber}</div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 32 }}>
-          Chambre {trackingOrder.roomNumber}
-        </div>
-
-        <div style={{ width: '100%', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', marginBottom: 32 }}>
-          {statusSteps.map((step, idx) => {
-            const active = idx <= currentIdx;
-            const isLast = idx === statusSteps.length - 1;
-            return (
-              <div key={step.key} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', position: 'relative' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: '50%',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: active ? 'linear-gradient(135deg, #d9a441, #ffe2a0)' : 'rgba(255,255,255,0.06)',
-                    color: active ? '#1b1305' : 'rgba(255,255,255,0.2)',
-                    fontSize: active ? 16 : 14, fontWeight: 700,
-                    transition: 'all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                    boxShadow: active ? '0 4px 16px rgba(217,164,65,0.3)' : 'none',
-                  }}>
-                    {active ? step.emoji : idx + 1}
-                  </div>
-                  {!isLast && (
-                    <div style={{
-                      width: 2, flex: 1, minHeight: 32,
-                      background: active && currentIdx > idx ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
-                      transition: 'background 0.5s',
-                    }} />
-                  )}
-                </div>
-                <div style={{ paddingTop: 6 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: active ? '#fff' : 'rgba(255,255,255,0.25)', transition: 'color 0.3s' }}>
-                    {step.label}
-                  </div>
-                  <div style={{ fontSize: 12, color: active ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)', marginTop: 2 }}>
-                    {active ? statusLabels[step.key] : ''}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div style={{ width: '100%', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <button onClick={() => setView('welcome')} style={{ width: '100%', height: 48, borderRadius: 999, border: 'none', background: 'linear-gradient(135deg, #d9a441, #ffe2a0)', color: '#1b1305', fontWeight: 700, fontSize: 15, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            🏠 Retour accueil chambre
-          </button>
-          <button onClick={() => setView('history')} style={{ width: '100%', height: 42, borderRadius: 999, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#fff', fontWeight: 500, fontSize: 13, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            📦 Historique des commandes
-          </button>
-          <a href={`tel:${hotel.phone1}`} style={{ width: '100%', height: 42, borderRadius: 999, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#fff', fontWeight: 500, fontSize: 13, cursor: 'pointer', fontFamily: "'Jost', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: 6 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            Appeler la réception
-          </a>
-        </div>
-      </div>
+      <RoomServiceTracking
+        trackingOrder={trackingOrder}
+        onBack={() => setView('welcome')}
+        onHistory={() => setView('history')}
+        roomNumber={roomNumber}
+      />
     );
   }
 
@@ -366,34 +246,54 @@ export default function RoomServicePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 500, margin: '0 auto', width: '100%' }}>
             {history.map((order) => {
               const items = (() => { try { return JSON.parse(order.items); } catch { return []; } })();
-              const statusIdx = statusIndex[order.status] ?? 0;
+              const sIdx = statusIndex[order.status] ?? 0;
               return (
-                <div key={order.id} style={{
-                  background: 'rgba(255,255,255,0.04)', borderRadius: 16,
-                  border: '1px solid rgba(255,255,255,0.06)', padding: 16,
-                }}>
+                <div
+                  key={order.id}
+                  onClick={() => openTracking(order)}
+                  className="history-card"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)', borderRadius: 16,
+                    border: '1px solid rgba(255,255,255,0.06)', padding: 16,
+                    cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+                    position: 'relative',
+                  }}
+                >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <strong style={{ color: '#d9a441', fontSize: 14 }}>{order.orderNumber}</strong>
                     <div style={{
                       fontSize: 11, padding: '3px 10px', borderRadius: 999,
-                      background: statusIdx >= 3 ? 'rgba(102,187,106,0.15)' : statusIdx >= 1 ? 'rgba(66,165,245,0.15)' : 'rgba(255,167,38,0.15)',
-                      color: statusIdx >= 3 ? '#66bb6a' : statusIdx >= 1 ? '#42a5f5' : '#ffa726',
+                      background: sIdx >= 3 ? 'rgba(102,187,106,0.15)' : sIdx >= 1 ? 'rgba(66,165,245,0.15)' : 'rgba(255,167,38,0.15)',
+                      color: sIdx >= 3 ? '#66bb6a' : sIdx >= 1 ? '#42a5f5' : '#ffa726',
                       fontWeight: 600,
                     }}>
-                      {statusSteps[statusIdx]?.label || order.status}
+                      {statusSteps[sIdx]?.label || order.status}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {items.map((item: any, idx: number) => (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 8 }}>
+                    {items.slice(0, 3).map((item: any, idx: number) => (
                       <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
                         <span>{item.name} x{item.quantity}</span>
-                        <span style={{ color: '#d9a441' }}>{formatPrice(item.price * item.quantity)}</span>
+                        <span style={{ color: '#d9a441' }}>{(item.price * item.quantity).toLocaleString()} FBU</span>
                       </div>
                     ))}
+                    {items.length > 3 && (
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+                        +{items.length - 3} autre{items.length - 3 > 1 ? 's' : ''}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 8, paddingTop: 8, display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.4)' }}>{new Date(order.createdAt).toLocaleString()}</span>
-                    <strong style={{ color: '#d9a441' }}>{formatPrice(order.total)}</strong>
+                  <div style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                      📦 Voir le détail
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <strong style={{ color: '#d9a441', fontSize: 13 }}>{order.total.toLocaleString()} FBU</strong>
+                      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, transition: 'transform 0.3s', display: 'inline-block' }} className="history-arrow">→</span>
+                    </div>
                   </div>
                 </div>
               );
